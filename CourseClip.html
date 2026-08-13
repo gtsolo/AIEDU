@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>课拍 CourseClip - 录课工作台</title>
+<style>
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f7;
+    --bg-tertiary: #fafafa;
+    --text-primary: #1d1d1f;
+    --text-secondary: #6e6e73;
+    --text-tertiary: #a1a1a6;
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --accent-light: rgba(0, 113, 227, 0.1);
+    --success: #30d158;
+    --warning: #ff9f0a;
+    --danger: #ff453a;
+    --border: #d2d2d7;
+    --border-light: #e5e5ea;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1c1c1e;
+      --bg-secondary: #2c2c2e;
+      --bg-tertiary: #3a3a3c;
+      --text-primary: #f5f5f7;
+      --text-secondary: #a1a1a6;
+      --text-tertiary: #636366;
+      --accent: #0a84ff;
+      --accent-hover: #409cff;
+      --accent-light: rgba(10, 132, 255, 0.15);
+      --success: #30d158;
+      --warning: #ff9f0a;
+      --danger: #ff453a;
+      --border: #48484a;
+      --border-light: #38383a;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+      --shadow-lg: 0 8px 30px rgba(0,0,0,0.5);
+    }
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header */
+  .header {
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-light);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--accent), #5ac8fa);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  .logo-text {
+    font-size: 20px;
+    font-weight: 600;
+  }
+
+  .logo-sub {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 980px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: var(--accent-hover); transform: scale(1.02); }
+
+  .btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--bg-tertiary); }
+
+  .btn-success {
+    background: var(--success);
+    color: white;
+  }
+  .btn-success:hover { filter: brightness(1.05); transform: scale(1.02); }
+
+  .btn-danger {
+    background: var(--danger);
+    color: white;
+  }
+  .btn-danger:hover { filter: brightness(1.05); transform: scale(1.02); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+  }
+  .btn-ghost:hover { background: var(--bg-secondary); color: var(--text-primary); }
+
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .btn-icon {
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  /* Main Layout */
+  .main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 16px;
+    padding: 16px;
+    overflow: hidden;
+  }
+
+  .panel {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .panel-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+
+  .panel-title {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .panel-body {
+    flex: 1;
+    overflow: auto;
+  }
+
+  /* Left Panel - Courseware + Media */
+  .left-panel {
+    display: grid;
+    grid-template-rows: 1fr 280px;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  /* Courseware Panel */
+  .courseware-area {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+  }
+
+  .courseware-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: var(--text-tertiary);
+    padding: 40px;
+    text-align: center;
+  }
+
+  .courseware-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--bg-secondary);
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+
+  .courseware-preview {
+    flex: 1;
+    background: var(--bg-tertiary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+  }
+
+  .courseware-preview iframe,
+  .courseware-preview object {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .courseware-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+  }
+
+  .tab-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .tab-btn.active {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Media Recorder Panel */
+  .media-panel {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+  }
+
+  .media-tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .media-tabs .tab-btn {
+    padding: 8px 20px;
+    font-size: 14px;
+  }
+
+  .record-area {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+  }
+
+  .record-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .record-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .video-preview {
+    width: 100%;
+    height: 160px;
+    background: #000;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .video-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .record-btn-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 12px;
+  }
+
+  .record-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 4px solid var(--danger);
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .record-btn::before {
+    content: '';
+    width: 44px;
+    height: 44px;
+    background: var(--danger);
+    border-radius: 50%;
+    transition: all 0.2s;
+  }
+
+  .record-btn.recording::before {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+  }
+
+  .record-btn:hover { transform: scale(1.05); }
+
+  .record-timer {
+    font-size: 28px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  .record-timer.recording { color: var(--danger); animation: pulse 1s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+  }
+
+  .recording-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--danger);
+    font-weight: 500;
+  }
+
+  .recording-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--danger);
+    border-radius: 50%;
+    animation: pulse 1s infinite;
+  }
+
+  .recordings-list {
+    flex: 1;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .recording-item {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .recording-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .recording-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .recording-meta {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+
+  .recording-actions {
+    display: flex;
+    gap: 4px;
+  }
+
+  /* Right Panel Stack */
+  .right-panel {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  /* Timer Panel */
+  .timer-panel {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .timer-display {
+    padding: 24px;
+    text-align: center;
+    background: linear-gradient(180deg, var(--accent-light), transparent);
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .timer-stage {
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  .timer-countdown {
+    font-size: 56px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    margin: 8px 0;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  .timer-countdown.warning { color: var(--warning); }
+  .timer-countdown.danger { color: var(--danger); }
+
+  .timer-progress {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg-secondary);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 0.3s;
+  }
+
+  .progress-fill.warning { background: var(--warning); }
+  .progress-fill.danger { background: var(--danger); }
+
+  .progress-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    min-width: 60px;
+    text-align: right;
+  }
+
+  .timer-controls {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .timer-controls .btn {
+    flex: 1;
+  }
+
+  .timer-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border-light);
+    font-size: 13px;
+  }
+
+  .timer-total-label { color: var(--text-secondary); }
+  .timer-total-value {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  /* Stages */
+  .stages-panel {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stages-list {
+    flex: 1;
+    overflow: auto;
+    padding: 8px;
+  }
+
+  .stage-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    margin-bottom: 4px;
+  }
+
+  .stage-item:hover { background: var(--bg-secondary); }
+
+  .stage-item.active {
+    background: var(--accent-light);
+    border: 1px solid var(--accent);
+  }
+
+  .stage-item.done {
+    opacity: 0.5;
+  }
+
+  .stage-item.done .stage-name {
+    text-decoration: line-through;
+  }
+
+  .stage-index {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .stage-item.active .stage-index {
+    background: var(--accent);
+    color: white;
+  }
+
+  .stage-item.done .stage-index {
+    background: var(--success);
+    color: white;
+  }
+
+  .stage-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .stage-name {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .stage-duration {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stage-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .stage-item:hover .stage-actions { opacity: 1; }
+
+  .stages-footer {
+    padding: 12px;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    gap: 8px;
+  }
+
+  .stages-footer .btn { flex: 1; }
+
+  /* Notes Panel */
+  .notes-panel {
+    background: var(--bg-primary);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 240px;
+  }
+
+  .notes-area {
+    flex: 1;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notes-list {
+    flex: 1;
+    overflow: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .note-item {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    border-left: 3px solid var(--accent);
+  }
+
+  .note-time {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .note-content {
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .note-input-wrap {
+    padding: 12px;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    gap: 8px;
+  }
+
+  .note-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s;
+    max-height: 80px;
+  }
+
+  .note-input:focus { border-color: var(--accent); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow: auto;
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .modal-title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .modal-body { padding: 24px; }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  /* Form */
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* AI Generator */
+  .ai-preview {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    margin-top: 16px;
+  }
+
+  .ai-preview-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ai-stage-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+  }
+
+  .ai-stage-name { font-size: 13px; font-weight: 500; }
+  .ai-stage-duration {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Toast */
+  .toast-container {
+    position: fixed;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    pointer-events: none;
+  }
+
+  .toast {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 12px 20px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    animation: slideDown 0.3s ease;
+    pointer-events: auto;
+  }
+
+  .toast.success { border-color: var(--success); }
+  .toast.warning { border-color: var(--warning); }
+  .toast.error { border-color: var(--danger); }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Stage Alert Modal */
+  .alert-modal .modal-body {
+    text-align: center;
+    padding: 32px 24px;
+  }
+
+  .alert-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin: 0 auto 20px;
+  }
+
+  .alert-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .alert-message {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 24px;
+  }
+
+  .alert-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+
+  /* Responsive */
+  @media (max-width: 1200px) {
+    .main {
+      grid-template-columns: 1fr 380px;
+    }
+  }
+
+  @media (max-width: 960px) {
+    .main {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+      overflow: auto;
+    }
+    .left-panel {
+      grid-template-rows: 300px 280px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="logo">
+    <div class="logo-icon">课</div>
+    <div>
+      <div class="logo-text">课拍 CourseClip</div>
+      <div class="logo-sub">录课工作台 · 节奏 · 录制 · 笔记</div>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-secondary btn-sm" onclick="openAIModal()">
+      ✨ AI 生成大纲
+    </button>
+    <button class="btn btn-ghost btn-sm btn-icon" title="帮助" onclick="showToast('提示：所有数据仅保存在本地浏览器中', 'success')">
+      ⓘ
+    </button>
+  </div>
+</header>
+
+<!-- Main -->
+<main class="main">
+  <!-- Left Area -->
+  <div class="left-panel">
+    <!-- Courseware -->
+    <div class="courseware-area">
+      <div class="panel-header">
+        <div class="panel-title">📚 课件预览</div>
+        <div class="courseware-tabs">
+          <button class="tab-btn active" onclick="switchCoursewareTab(this, 'pdf')">PDF 课件</button>
+          <button class="tab-btn" onclick="switchCoursewareTab(this, 'screen')">屏幕共享</button>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn btn-secondary btn-sm" onclick="document.getElementById('coursewareFile').click()">
+            📎 上传 PDF
+          </button>
+          <input type="file" id="coursewareFile" accept=".pdf" style="display:none" onchange="handleCoursewareUpload(event)">
+          <button class="btn btn-secondary btn-sm" id="shareScreenBtn" onclick="startScreenShare()">
+            🖥 共享屏幕
+          </button>
+        </div>
+      </div>
+      <div class="courseware-preview" id="coursewarePreview">
+        <div class="courseware-empty" id="coursewareEmpty">
+          <div class="courseware-icon">📖</div>
+          <div>
+            <div style="font-size:16px;font-weight:500;margin-bottom:6px;">还没有上传课件</div>
+            <div style="font-size:13px;">上传 PDF 课件或共享屏幕，录课时边看边讲</div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="document.getElementById('coursewareFile').click()">
+            选择 PDF 文件
+          </button>
+        </div>
+        <iframe id="coursewareFrame" style="display:none;"></iframe>
+        <video id="screenVideo" style="display:none;width:100%;height:100%;object-fit:contain;background:#000;" autoplay muted></video>
+      </div>
+    </div>
+
+    <!-- Media Recorder -->
+    <div class="media-panel">
+      <div class="panel-header">
+        <div class="panel-title">🎙 录制</div>
+        <div class="media-tabs">
+          <button class="tab-btn active" data-media-tab="audio" onclick="switchMediaTab(this)">🎵 录音</button>
+          <button class="tab-btn" data-media-tab="video" onclick="switchMediaTab(this)">🎥 录像</button>
+        </div>
+      </div>
+      <div class="record-area">
+        <div class="record-left">
+          <div class="video-preview" id="videoPreview" style="display:none;">
+            <video id="recorderVideo" autoplay muted></video>
+          </div>
+          <div id="audioPreview" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-secondary);border-radius:var(--radius-md);">
+            <div style="font-size:60px;margin-bottom:12px;">🎤</div>
+            <div style="font-size:13px;color:var(--text-secondary);" id="audioHint">点击下方按钮开始录音</div>
+          </div>
+        </div>
+        <div class="record-right">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div class="record-timer" id="recordTimer">00:00</div>
+            <div id="recordingIndicator" style="display:none;" class="recording-indicator">
+              <span class="recording-dot"></span>
+              录制中
+            </div>
+          </div>
+          <div class="record-btn-wrap">
+            <button class="record-btn" id="recordBtn" onclick="toggleRecord()"></button>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);display:flex;align-items:center;justify-content:space-between;padding:0 4px;">
+            <span id="recordStatus">准备就绪</span>
+            <span id="recordingsCount">共 0 条</span>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 20px 20px;border-top:1px solid var(--border-light);">
+        <div style="font-size:13px;font-weight:500;margin:12px 0 8px;">录制文件</div>
+        <div class="recordings-list" id="recordingsList">
+          <div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px;">
+            还没有录制文件
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Area -->
+  <div class="right-panel">
+    <!-- Timer -->
+    <div class="timer-panel">
+      <div class="timer-display">
+        <div class="timer-stage" id="currentStageName">还未开始</div>
+        <div class="timer-countdown" id="timerCountdown">00:00</div>
+        <div class="timer-progress">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width:0%"></div>
+          </div>
+          <div class="progress-text" id="progressText">0%</div>
+        </div>
+      </div>
+      <div class="timer-controls">
+        <button class="btn btn-primary" id="startTimerBtn" onclick="startTimer()">▶ 开始</button>
+        <button class="btn btn-secondary" id="pauseTimerBtn" onclick="pauseTimer()" disabled>⏸ 暂停</button>
+        <button class="btn btn-ghost" id="resetTimerBtn" onclick="resetTimer()">↺ 重置</button>
+      </div>
+      <div class="timer-total">
+        <span class="timer-total-label">总时长 / 已用</span>
+        <span class="timer-total-value">
+          <span id="totalDuration">00:00</span>
+          <span style="color:var(--text-tertiary);margin:0 4px;">/</span>
+          <span id="elapsedDuration">00:00</span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Stages -->
+    <div class="stages-panel">
+      <div class="panel-header">
+        <div class="panel-title">🎯 课程阶段</div>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="openStageModal()" title="添加阶段">+</button>
+      </div>
+      <div class="stages-list" id="stagesList"></div>
+      <div class="stages-footer">
+        <button class="btn btn-secondary btn-sm" onclick="openStageModal()">+ 添加阶段</button>
+        <button class="btn btn-primary btn-sm" onclick="nextStage()" id="nextStageBtn" disabled>下一阶段 →</button>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="notes-panel">
+      <div class="panel-header">
+        <div class="panel-title">📝 课堂笔记</div>
+        <span style="font-size:12px;color:var(--text-secondary);" id="notesCount">0 条</span>
+      </div>
+      <div class="notes-area">
+        <div class="notes-list" id="notesList">
+          <div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px;">
+            记录灵感和要点，笔记自动标记时间戳
+          </div>
+        </div>
+        <div class="note-input-wrap">
+          <textarea class="note-input" id="noteInput" placeholder="输入笔记内容，按 Enter 发送..." rows="2" onkeydown="handleNoteKeydown(event)"></textarea>
+          <button class="btn btn-primary btn-sm" onclick="addNote()" style="align-self:flex-end;">发送</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Stage Modal -->
+<div class="modal-overlay" id="stageModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="stageModalTitle">添加阶段</div>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('stageModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">阶段名称</label>
+        <input type="text" class="form-input" id="stageNameInput" placeholder="如：课程导入、新授内容、练习、总结...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">时长（分钟）</label>
+          <input type="number" class="form-input" id="stageMinutesInput" value="5" min="1" max="120">
+        </div>
+        <div class="form-group">
+          <label class="form-label">时长（秒）</label>
+          <input type="number" class="form-input" id="stageSecondsInput" value="0" min="0" max="59">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注（可选）</label>
+        <input type="text" class="form-input" id="stageNoteInput" placeholder="这一阶段要讲什么？">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('stageModal')">取消</button>
+      <button class="btn btn-primary" onclick="saveStage()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI Modal -->
+<div class="modal-overlay" id="aiModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">✨ AI 生成课程大纲</div>
+      <button class="btn btn-ghost btn-icon" onclick="closeModal('aiModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">课程主题</label>
+        <input type="text" class="form-input" id="aiTopicInput" placeholder="如：初中数学-一元二次方程的解法">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">课程总时长（分钟）</label>
+          <select class="form-select" id="aiDurationInput">
+            <option value="15">15 分钟（微课）</option>
+            <option value="30">30 分钟（短课）</option>
+            <option value="40">40 分钟（标准）</option>
+            <option value="45" selected>45 分钟（标准课）</option>
+            <option value="50">50 分钟（大课）</option>
+            <option value="60">60 分钟（长课）</option>
+            <option value="90">90 分钟（连堂课）</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">授课对象</label>
+          <select class="form-select" id="aiAudienceInput">
+            <option>小学生</option>
+            <option selected>初中生</option>
+            <option>高中生</option>
+            <option>大学生</option>
+            <option>成人培训</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">课程类型</label>
+        <select class="form-select" id="aiTypeInput">
+          <option selected>新授课</option>
+          <option>复习课</option>
+          <option>习题课</option>
+          <option>实验课</option>
+          <option>讲评课</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:4px;" onclick="generateAIOutline()">
+        🤖 生成大纲
+      </button>
+
+      <div id="aiResultWrap" style="display:none;">
+        <div class="ai-preview">
+          <div class="ai-preview-title">📋 生成结果</div>
+          <div id="aiResultList"></div>
+          <div style="margin-top:12px;display:flex;gap:8px;">
+            <button class="btn btn-secondary btn-sm" onclick="generateAIOutline()">🔄 重新生成</button>
+            <button class="btn btn-primary btn-sm" onclick="importAIOutline()" style="flex:1;">📥 一键导入到计时器</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stage Alert Modal -->
+<div class="modal-overlay" id="alertModal">
+  <div class="modal alert-modal" style="max-width:420px;">
+    <div class="modal-body">
+      <div class="alert-icon" id="alertIcon">⏰</div>
+      <div class="alert-title" id="alertTitle">时间到！</div>
+      <div class="alert-message" id="alertMessage">当前阶段已结束，准备切换下一阶段</div>
+      <div class="alert-actions">
+        <button class="btn btn-secondary" onclick="extendStage()">+2 分钟</button>
+        <button class="btn btn-primary" onclick="confirmNextStage()">进入下一阶段 →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ==================== State ====================
+const state = {
+  stages: [
+    { id: 1, name: '课程导入', duration: 300, note: '情境引入、激发兴趣', status: 'pending' },
+    { id: 2, name: '新授内容', duration: 1200, note: '讲解核心知识点', status: 'pending' },
+    { id: 3, name: '练习巩固', duration: 600, note: '学生互动练习', status: 'pending' },
+    { id: 4, name: '课堂总结', duration: 300, note: '回顾重点、布置作业', status: 'pending' },
+  ],
+  currentStageIndex: -1,
+  timerRunning: false,
+  timerPaused: false,
+  timerInterval: null,
+  remainingSeconds: 0,
+  elapsedTotal: 0,
+  recording: false,
+  mediaRecorder: null,
+  recordedChunks: [],
+  mediaStream: null,
+  mediaType: 'audio',
+  recordStartTime: 0,
+  recordInterval: null,
+  recordings: [],
+  notes: [],
+  editingStageId: null,
+  aiOutline: [],
+};
+
+// ==================== Utilities ====================
+function formatTime(seconds) {
+  if (seconds < 0) seconds = 0;
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function formatTimeLong(seconds) {
+  if (seconds < 0) seconds = 0;
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  if (h > 0) {
+    return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  const icons = { success: '✅', warning: '⚠️', error: '❌', info: 'ℹ️' };
+  toast.innerHTML = `<span>${icons[type] || 'ℹ️'}</span><span>${message}</span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-20px)';
+    toast.style.transition = 'all 0.3s';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+function openModal(id) {
+  document.getElementById(id).classList.add('show');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show');
+}
+
+// ==================== Stages ====================
+function renderStages() {
+  const list = document.getElementById('stagesList');
+  if (state.stages.length === 0) {
+    list.innerHTML = `<div style="padding:30px;text-align:center;color:var(--text-tertiary);font-size:13px;">
+      还没有阶段，点击下方"添加阶段"或使用 AI 生成大纲
+    </div>`;
+  } else {
+    list.innerHTML = state.stages.map((stage, idx) => {
+      const isActive = idx === state.currentStageIndex;
+      const isDone = stage.status === 'done';
+      return `
+        <div class="stage-item ${isActive ? 'active' : ''} ${isDone ? 'done' : ''}" 
+             onclick="selectStage(${idx})">
+          <div class="stage-index">${isDone ? '✓' : idx + 1}</div>
+          <div class="stage-content">
+            <div class="stage-name">${escapeHtml(stage.name)}</div>
+            <div class="stage-duration">
+              ${formatTime(stage.duration)}
+              ${stage.note ? ` · ${escapeHtml(stage.note)}` : ''}
+            </div>
+          </div>
+          <div class="stage-actions">
+            <button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();editStage(${stage.id})" title="编辑">✎</button>
+            <button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();deleteStage(${stage.id})" title="删除">🗑</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+  updateTotalDuration();
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function updateTotalDuration() {
+  const total = state.stages.reduce((sum, s) => sum + s.duration, 0);
+  document.getElementById('totalDuration').textContent = formatTime(total);
+  document.getElementById('elapsedDuration').textContent = formatTime(state.elapsedTotal);
+}
+
+function openStageModal() {
+  state.editingStageId = null;
+  document.getElementById('stageModalTitle').textContent = '添加阶段';
+  document.getElementById('stageNameInput').value = '';
+  document.getElementById('stageMinutesInput').value = 5;
+  document.getElementById('stageSecondsInput').value = 0;
+  document.getElementById('stageNoteInput').value = '';
+  openModal('stageModal');
+  setTimeout(() => document.getElementById('stageNameInput').focus(), 100);
+}
+
+function editStage(id) {
+  const stage = state.stages.find(s => s.id === id);
+  if (!stage) return;
+  state.editingStageId = id;
+  document.getElementById('stageModalTitle').textContent = '编辑阶段';
+  document.getElementById('stageNameInput').value = stage.name;
+  document.getElementById('stageMinutesInput').value = Math.floor(stage.duration / 60);
+  document.getElementById('stageSecondsInput').value = stage.duration % 60;
+  document.getElementById('stageNoteInput').value = stage.note || '';
+  openModal('stageModal');
+}
+
+function saveStage() {
+  const name = document.getElementById('stageNameInput').value.trim();
+  const minutes = parseInt(document.getElementById('stageMinutesInput').value) || 0;
+  const seconds = parseInt(document.getElementById('stageSecondsInput').value) || 0;
+  const note = document.getElementById('stageNoteInput').value.trim();
+
+  if (!name) {
+    showToast('请输入阶段名称', 'warning');
+    return;
+  }
+  const duration = minutes * 60 + seconds;
+  if (duration <= 0) {
+    showToast('请设置有效时长', 'warning');
+    return;
+  }
+
+  if (state.editingStageId) {
+    const stage = state.stages.find(s => s.id === state.editingStageId);
+    if (stage) {
+      stage.name = name;
+      stage.duration = duration;
+      stage.note = note;
+    }
+    showToast('阶段已更新', 'success');
+  } else {
+    state.stages.push({
+      id: Date.now(),
+      name,
+      duration,
+      note,
+      status: 'pending'
+    });
+    showToast('阶段已添加', 'success');
+  }
+  renderStages();
+  closeModal('stageModal');
+}
+
+function deleteStage(id) {
+  const idx = state.stages.findIndex(s => s.id === id);
+  if (idx === -1) return;
+  if (state.currentStageIndex === idx) {
+    stopTimer();
+    state.currentStageIndex = -1;
+    updateTimerDisplay();
+  } else if (state.currentStageIndex > idx) {
+    state.currentStageIndex--;
+  }
+  state.stages.splice(idx, 1);
+  renderStages();
+  showToast('阶段已删除', 'success');
+}
+
+function selectStage(idx) {
+  if (state.timerRunning && idx !== state.currentStageIndex) {
+    showToast('请先停止计时再切换阶段', 'warning');
+    return;
+  }
+  if (state.stages[idx].status === 'done') {
+    state.stages[idx].status = 'pending';
+  }
+  state.currentStageIndex = idx;
+  state.remainingSeconds = state.stages[idx].duration;
+  updateTimerDisplay();
+  renderStages();
+  document.getElementById('nextStageBtn').disabled = false;
+}
+
+// ==================== Timer ====================
+function updateTimerDisplay() {
+  const countdownEl = document.getElementById('timerCountdown');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
+  const stageNameEl = document.getElementById('currentStageName');
+
+  if (state.currentStageIndex === -1 || !state.stages[state.currentStageIndex]) {
+    countdownEl.textContent = '00:00';
+    countdownEl.className = 'timer-countdown';
+    progressFill.style.width = '0%';
+    progressFill.className = 'progress-fill';
+    progressText.textContent = '0%';
+    stageNameEl.textContent = '还未开始';
+    return;
+  }
+
+  const stage = state.stages[state.currentStageIndex];
+  countdownEl.textContent = formatTime(state.remainingSeconds);
+  stageNameEl.textContent = `当前：${stage.name}`;
+
+  const progress = stage.duration > 0 ? (1 - state.remainingSeconds / stage.duration) * 100 : 0;
+  progressFill.style.width = `${Math.min(100, progress)}%`;
+  progressText.textContent = `${Math.round(progress)}%`;
+
+  const ratio = state.remainingSeconds / stage.duration;
+  if (ratio <= 0.1) {
+    countdownEl.className = 'timer-countdown danger';
+    progressFill.className = 'progress-fill danger';
+  } else if (ratio <= 0.3) {
+    countdownEl.className = 'timer-countdown warning';
+    progressFill.className = 'progress-fill warning';
+  } else {
+    countdownEl.className = 'timer-countdown';
+    progressFill.className = 'progress-fill';
+  }
+}
+
+function startTimer() {
+  if (state.currentStageIndex === -1) {
+    if (state.stages.length === 0) {
+      showToast('请先添加阶段或使用 AI 生成大纲', 'warning');
+      return;
+    }
+    state.currentStageIndex = 0;
+    if (state.stages[0].status !== 'done') {
+      state.stages[0].status = 'active';
+    }
+    state.remainingSeconds = state.stages[0].duration;
+    renderStages();
+  }
+
+  if (state.timerRunning && !state.timerPaused) return;
+
+  state.timerRunning = true;
+  state.timerPaused = false;
+  document.getElementById('startTimerBtn').disabled = true;
+  document.getElementById('pauseTimerBtn').disabled = false;
+  document.getElementById('nextStageBtn').disabled = false;
+
+  state.timerInterval = setInterval(tick, 1000);
+  showToast('计时开始', 'success');
+}
+
+function tick() {
+  state.remainingSeconds--;
+  state.elapsedTotal++;
+  updateTimerDisplay();
+  updateTotalDuration();
+
+  if (state.remainingSeconds <= 0) {
+    stopTimer();
+    triggerStageAlert();
+  }
+}
+
+function pauseTimer() {
+  if (!state.timerRunning) return;
+  state.timerPaused = true;
+  clearInterval(state.timerInterval);
+  document.getElementById('startTimerBtn').disabled = false;
+  document.getElementById('pauseTimerBtn').disabled = true;
+  document.getElementById('startTimerBtn').textContent = '▶ 继续';
+}
+
+function stopTimer() {
+  clearInterval(state.timerInterval);
+  state.timerRunning = false;
+  state.timerPaused = false;
+  document.getElementById('startTimerBtn').disabled = false;
+  document.getElementById('pauseTimerBtn').disabled = true;
+  document.getElementById('startTimerBtn').textContent = '▶ 开始';
+}
+
+function resetTimer() {
+  stopTimer();
+  if (state.currentStageIndex !== -1 && state.stages[state.currentStageIndex]) {
+    state.remainingSeconds = state.stages[state.currentStageIndex].duration;
+    if (state.stages[state.currentStageIndex].status === 'active') {
+      state.stages[state.currentStageIndex].status = 'pending';
+    }
+  }
+  state.elapsedTotal = 0;
+  updateTimerDisplay();
+  updateTotalDuration();
+  renderStages();
+  showToast('计时已重置', 'info');
+}
+
+function triggerStageAlert() {
+  const stage = state.stages[state.currentStageIndex];
+  const hasNext = state.currentStageIndex < state.stages.length - 1;
+
+  document.getElementById('alertIcon').textContent = '⏰';
+  document.getElementById('alertTitle').textContent = `"${stage.name}" 时间到！`;
+
+  if (hasNext) {
+    const nextStage = state.stages[state.currentStageIndex + 1];
+    document.getElementById('alertMessage').innerHTML = 
+      `当前阶段已完成。<br>下一阶段：<strong>${nextStage.name}</strong>（${formatTime(nextStage.duration)}）`;
+  } else {
+    document.getElementById('alertMessage').textContent = '所有阶段已完成！本节课圆满结束 🎉';
+  }
+
+  playBeep();
+  openModal('alertModal');
+}
+
+function extendStage() {
+  state.remainingSeconds += 120;
+  closeModal('alertModal');
+  updateTimerDisplay();
+  startTimer();
+  showToast('已延长 2 分钟', 'info');
+}
+
+function confirmNextStage() {
+  closeModal('alertModal');
+  nextStage();
+}
+
+function nextStage() {
+  if (state.currentStageIndex === -1) {
+    if (state.stages.length > 0) {
+      startTimer();
+    }
+    return;
+  }
+
+  if (state.timerRunning) stopTimer();
+
+  state.stages[state.currentStageIndex].status = 'done';
+  state.currentStageIndex++;
+
+  if (state.currentStageIndex >= state.stages.length) {
+    state.currentStageIndex = -1;
+    showToast('🎉 所有阶段已完成！', 'success');
+    document.getElementById('nextStageBtn').disabled = true;
+  } else {
+    state.stages[state.currentStageIndex].status = 'active';
+    state.remainingSeconds = state.stages[state.currentStageIndex].duration;
+    showToast(`进入阶段：${state.stages[state.currentStageIndex].name}`, 'info');
+    startTimer();
+  }
+
+  updateTimerDisplay();
+  renderStages();
+}
+
+function playBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 800;
+    osc.type = 'sine';
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+
+    setTimeout(() => {
+      const o2 = ctx.createOscillator();
+      const g2 = ctx.createGain();
+      o2.connect(g2);
+      g2.connect(ctx.destination);
+      o2.frequency.value = 1000;
+      g2.gain.setValueAtTime(0.3, ctx.currentTime);
+      g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+      o2.start(ctx.currentTime);
+      o2.stop(ctx.currentTime + 0.5);
+    }, 300);
+  } catch (e) {}
+}
+
+// ==================== Media Recorder ====================
+function switchMediaTab(btn) {
+  const tab = btn.dataset.mediaTab;
+  document.querySelectorAll('.media-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  state.mediaType = tab;
+
+  const videoPreview = document.getElementById('videoPreview');
+  const audioPreview = document.getElementById('audioPreview');
+
+  if (state.recording) {
+    showToast('请先停止当前录制', 'warning');
+    return;
+  }
+
+  stopMediaStream();
+
+  if (tab === 'video') {
+    videoPreview.style.display = '';
+    audioPreview.style.display = 'none';
+    document.getElementById('audioHint').textContent = '点击下方按钮开始录像';
+  } else {
+    videoPreview.style.display = 'none';
+    audioPreview.style.display = 'flex';
+    document.getElementById('audioHint').textContent = '点击下方按钮开始录音';
+  }
+}
+
+async function startMediaStream() {
+  try {
+    if (state.mediaType === 'video') {
+      state.mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: 'user' },
+        audio: true
+      });
+      const videoEl = document.getElementById('recorderVideo');
+      videoEl.srcObject = state.mediaStream;
+    } else {
+      state.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    }
+    return true;
+  } catch (err) {
+    console.error('Media error:', err);
+    showToast(`无法获取${state.mediaType === 'video' ? '摄像头/麦克风' : '麦克风'}权限：${err.message}`, 'error');
+    return false;
+  }
+}
+
+function stopMediaStream() {
+  if (state.mediaStream) {
+    state.mediaStream.getTracks().forEach(t => t.stop());
+    state.mediaStream = null;
+  }
+  const videoEl = document.getElementById('recorderVideo');
+  if (videoEl) videoEl.srcObject = null;
+}
+
+async function toggleRecord() {
+  if (state.recording) {
+    stopRecording();
+  } else {
+    await startRecording();
+  }
+}
+
+async function startRecording() {
+  const ok = await startMediaStream();
+  if (!ok) return;
+
+  try {
+    let options = {};
+    if (state.mediaType === 'video') {
+      const mimeTypes = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+      for (const t of mimeTypes) {
+        if (MediaRecorder.isTypeSupported(t)) { options.mimeType = t; break; }
+      }
+    } else {
+      const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/ogg'];
+      for (const t of mimeTypes) {
+        if (MediaRecorder.isTypeSupported(t)) { options.mimeType = t; break; }
+      }
+    }
+
+    state.mediaRecorder = new MediaRecorder(state.mediaStream, Object.keys(options).length ? options : undefined);
+    state.recordedChunks = [];
+
+    state.mediaRecorder.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) state.recordedChunks.push(e.data);
+    };
+
+    state.mediaRecorder.onstop = () => {
+      const blob = new Blob(state.recordedChunks, { 
+        type: state.mediaRecorder.mimeType || (state.mediaType === 'video' ? 'video/webm' : 'audio/webm') 
+      });
+      const url = URL.createObjectURL(blob);
+      const duration = Math.floor((Date.now() - state.recordStartTime) / 1000);
+      const now = new Date();
+      const name = `${state.mediaType === 'video' ? '录像' : '录音'}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+      
+      state.recordings.unshift({
+        id: Date.now(),
+        type: state.mediaType,
+        name,
+        url,
+        blob,
+        duration,
+        size: blob.size,
+        time: now
+      });
+      
+      renderRecordings();
+      showToast(`${state.mediaType === 'video' ? '录像' : '录音'}已保存`, 'success');
+      
+      if (state.mediaType === 'audio') {
+        stopMediaStream();
+      }
+    };
+
+    state.mediaRecorder.start(1000);
+    state.recording = true;
+    state.recordStartTime = Date.now();
+
+    document.getElementById('recordBtn').classList.add('recording');
+    document.getElementById('recordingIndicator').style.display = 'inline-flex';
+    document.getElementById('recordStatus').textContent = state.mediaType === 'video' ? '录像中...' : '录音中...';
+
+    state.recordInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - state.recordStartTime) / 1000);
+      document.getElementById('recordTimer').textContent = formatTimeLong(elapsed);
+      document.getElementById('recordTimer').classList.add('recording');
+    }, 250);
+
+    showToast(state.mediaType === 'video' ? '录像开始' : '录音开始', 'success');
+  } catch (err) {
+    console.error('Record error:', err);
+    showToast('录制失败：' + err.message, 'error');
+    stopMediaStream();
+  }
+}
+
+function stopRecording() {
+  if (state.mediaRecorder && state.recording) {
+    state.mediaRecorder.stop();
+    state.recording = false;
+    clearInterval(state.recordInterval);
+
+    document.getElementById('recordBtn').classList.remove('recording');
+    document.getElementById('recordingIndicator').style.display = 'none';
+    document.getElementById('recordTimer').textContent = '00:00';
+    document.getElementById('recordTimer').classList.remove('recording');
+    document.getElementById('recordStatus').textContent = '准备就绪';
+  }
+}
+
+function renderRecordings() {
+  const list = document.getElementById('recordingsList');
+  document.getElementById('recordingsCount').textContent = `共 ${state.recordings.length} 条`;
+
+  if (state.recordings.length === 0) {
+    list.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px;">还没有录制文件</div>`;
+    return;
+  }
+
+  list.innerHTML = state.recordings.map(r => {
+    const sizeKB = (r.size / 1024).toFixed(1);
+    const sizeMB = (r.size / 1024 / 1024).toFixed(1);
+    const sizeStr = r.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+    const ext = r.type === 'video' ? 'webm' : 'webm';
+    return `
+      <div class="recording-item">
+        <div style="font-size:20px;">${r.type === 'video' ? '🎥' : '🎵'}</div>
+        <div class="recording-info">
+          <div class="recording-name">${escapeHtml(r.name)}</div>
+          <div class="recording-meta">${formatTimeLong(r.duration)} · ${sizeStr} · ${r.time.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+        <div class="recording-actions">
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="playRecording(${r.id})" title="播放">▶</button>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="downloadRecording(${r.id})" title="下载">⬇</button>
+          <button class="btn btn-ghost btn-sm btn-icon" onclick="deleteRecording(${r.id})" title="删除">🗑</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function playRecording(id) {
+  const r = state.recordings.find(x => x.id === id);
+  if (!r) return;
+  const w = window.open('', '_blank');
+  if (!w) {
+    showToast('无法打开新窗口，请检查浏览器弹窗设置', 'error');
+    return;
+  }
+  if (r.type === 'video') {
+    w.document.write(`<html><head><title>${escapeHtml(r.name)}</title><style>body{margin:0;background:#000;display:flex;align-items:center;justify-content:center;height:100vh;}</style></head><body><video controls autoplay src="${r.url}" style="max-width:90vw;max-height:90vh;"></video></body></html>`);
+  } else {
+    w.document.write(`<html><head><title>${escapeHtml(r.name)}</title><style>body{margin:0;background:var(--bg-primary);display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;}</style></head><body><div style="text-align:center;"><div style="font-size:80px;margin-bottom:20px;">🎵</div><div style="font-size:18px;margin-bottom:20px;">${escapeHtml(r.name)}</div><audio controls autoplay src="${r.url}"></audio></div></body></html>`);
+  }
+}
+
+function downloadRecording(id) {
+  const r = state.recordings.find(x => x.id === id);
+  if (!r) return;
+  const a = document.createElement('a');
+  a.href = r.url;
+  a.download = `${r.name}.webm`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  showToast('开始下载', 'success');
+}
+
+function deleteRecording(id) {
+  const idx = state.recordings.findIndex(x => x.id === id);
+  if (idx === -1) return;
+  const r = state.recordings[idx];
+  if (r.url) URL.revokeObjectURL(r.url);
+  state.recordings.splice(idx, 1);
+  renderRecordings();
+  showToast('已删除', 'info');
+}
+
+// ==================== Courseware ====================
+function switchCoursewareTab(btn, tab) {
+  document.querySelectorAll('.courseware-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function handleCoursewareUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.type !== 'application/pdf') {
+    showToast('请上传 PDF 文件', 'warning');
+    return;
+  }
+  const url = URL.createObjectURL(file);
+  const frame = document.getElementById('coursewareFrame');
+  const empty = document.getElementById('coursewareEmpty');
+  const video = document.getElementById('screenVideo');
+  frame.src = url;
+  frame.style.display = '';
+  empty.style.display = 'none';
+  video.style.display = 'none';
+  showToast(`已加载课件：${file.name}`, 'success');
+}
+
+async function startScreenShare() {
+  try {
+    const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+    const video = document.getElementById('screenVideo');
+    const frame = document.getElementById('coursewareFrame');
+    const empty = document.getElementById('coursewareEmpty');
+    video.srcObject = stream;
+    video.style.display = '';
+    frame.style.display = 'none';
+    empty.style.display = 'none';
+
+    stream.getVideoTracks()[0].addEventListener('ended', () => {
+      video.style.display = 'none';
+      if (frame.src) frame.style.display = '';
+      else empty.style.display = '';
+      showToast('屏幕共享已结束', 'info');
+    });
+    showToast('屏幕共享已启动', 'success');
+  } catch (err) {
+    console.error(err);
+    showToast('屏幕共享失败：' + err.message, 'error');
+  }
+}
+
+// ==================== Notes ====================
+function handleNoteKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    addNote();
+  }
+}
+
+function addNote() {
+  const input = document.getElementById('noteInput');
+  const text = input.value.trim();
+  if (!text) return;
+
+  let timeInfo = '';
+  if (state.timerRunning && state.currentStageIndex !== -1) {
+    const stage = state.stages[state.currentStageIndex];
+    const remainStr = formatTime(state.remainingSeconds);
+    timeInfo = `${stage.name} · 剩余 ${remainStr}`;
+  } else {
+    timeInfo = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  state.notes.unshift({
+    id: Date.now(),
+    content: text,
+    time: timeInfo,
+    timestamp: Date.now(),
+    stageIndex: state.currentStageIndex
+  });
+
+  input.value = '';
+  renderNotes();
+  showToast('笔记已添加', 'success');
+}
+
+function renderNotes() {
+  const list = document.getElementById('notesList');
+  document.getElementById('notesCount').textContent = `${state.notes.length} 条`;
+
+  if (state.notes.length === 0) {
+    list.innerHTML = `<div style="padding:20px;text-align:center;color:var(--text-tertiary);font-size:13px;">
+      记录灵感和要点，笔记自动标记时间戳
+    </div>`;
+    return;
+  }
+
+  list.innerHTML = state.notes.map(n => `
+    <div class="note-item">
+      <div class="note-time">⏱ ${escapeHtml(n.time)}</div>
+      <div class="note-content">${escapeHtml(n.content)}</div>
+    </div>
+  `).join('');
+}
+
+// ==================== AI Outline Generator ====================
+function openAIModal() {
+  document.getElementById('aiResultWrap').style.display = 'none';
+  document.getElementById('aiTopicInput').value = '';
+  openModal('aiModal');
+}
+
+function generateAIOutline() {
+  const topic = document.getElementById('aiTopicInput').value.trim();
+  const duration = parseInt(document.getElementById('aiDurationInput').value) * 60;
+  const audience = document.getElementById('aiAudienceInput').value;
+  const type = document.getElementById('aiTypeInput').value;
+
+  if (!topic) {
+    showToast('请输入课程主题', 'warning');
+    return;
+  }
+
+  // Simulate AI generation delay
+  const btn = event.target;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = '🤖 生成中...';
+
+  setTimeout(() => {
+    // Build outline based on duration and type
+    const outline = buildOutline(topic, duration, audience, type);
+    state.aiOutline = outline;
+    renderAIResult(outline, topic);
+    btn.disabled = false;
+    btn.textContent = originalText;
+    document.getElementById('aiResultWrap').style.display = 'block';
+    showToast('大纲生成成功！', 'success');
+  }, 1200);
+}
+
+function buildOutline(topic, totalSeconds, audience, type) {
+  const totalMin = totalSeconds / 60;
+  const result = [];
+
+  if (type === '复习课') {
+    const ratios = [
+      { name: '知识回顾', r: 0.15, note: '回顾上节课/本单元重点知识点' },
+      { name: '难点梳理', r: 0.25, note: '针对易错点进行讲解' },
+      { name: '典型例题', r: 0.35, note: '例题精讲 + 思路分析' },
+      { name: '随堂练习', r: 0.15, note: '学生独立完成练习' },
+      { name: '总结答疑', r: 0.10, note: '答疑 + 课后作业布置' },
+    ];
+    ratios.forEach(r => {
+      result.push({ name: r.name, duration: Math.round(totalSeconds * r.r / 30) * 30, note: r.note });
+    });
+  } else if (type === '习题课') {
+    const ratios = [
+      { name: '作业反馈', r: 0.15, note: '上次作业完成情况点评' },
+      { name: '基础题讲解', r: 0.25, note: '基础题方法总结' },
+      { name: '提高题突破', r: 0.35, note: '难题思路分析与拓展' },
+      { name: '课堂检测', r: 0.15, note: '小测检验掌握情况' },
+      { name: '方法总结', r: 0.10, note: '提炼解题方法与技巧' },
+    ];
+    ratios.forEach(r => {
+      result.push({ name: r.name, duration: Math.round(totalSeconds * r.r / 30) * 30, note: r.note });
+    });
+  } else if (type === '实验课') {
+    const ratios = [
+      { name: '实验导入', r: 0.12, note: '实验目的和原理说明' },
+      { name: '器材介绍', r: 0.13, note: '认识实验器材和使用方法' },
+      { name: '教师演示', r: 0.25, note: '规范操作演示' },
+      { name: '学生实验', r: 0.35, note: '分组实验，教师巡视指导' },
+      { name: '结果讨论', r: 0.10, note: '实验结果分析与讨论' },
+      { name: '总结延伸', r: 0.05, note: '实验结论 + 课后思考题' },
+    ];
+    ratios.forEach(r => {
+      result.push({ name: r.name, duration: Math.max(30, Math.round(totalSeconds * r.r / 30) * 30), note: r.note });
+    });
+  } else if (type === '讲评课') {
+    const ratios = [
+      { name: '成绩分析', r: 0.10, note: '整体情况和数据分析' },
+      { name: '基础错题', r: 0.20, note: '基础错题讲解与纠错' },
+      { name: '中档题突破', r: 0.30, note: '典型中档题方法指导' },
+      { name: '难题精讲', r: 0.25, note: '压轴题思路拆解' },
+      { name: '反思总结', r: 0.15, note: '学生反思 + 改进建议' },
+    ];
+    ratios.forEach(r => {
+      result.push({ name: r.name, duration: Math.round(totalSeconds * r.r / 30) * 30, note: r.note });
+    });
+  } else {
+    // Default: 新授课
+    if (totalMin <= 20) {
+      const ratios = [
+        { name: '情境导入', r: 0.15, note: '快速引入课题，激发兴趣' },
+        { name: '新知探究', r: 0.45, note: '核心知识点讲解' },
+        { name: '巩固应用', r: 0.25, note: '例题与小练习' },
+        { name: '总结作业', r: 0.15, note: '梳理重点 + 布置作业' },
+      ];
+      ratios.forEach(r => {
+        result.push({ name: r.name, duration: Math.max(30, Math.round(totalSeconds * r.r / 30) * 30), note: r.note });
+      });
+    } else if (totalMin <= 40) {
+      const ratios = [
+        { name: '课程导入', r: 0.10, note: '复习旧知 / 情境引入' },
+        { name: '新知讲解', r: 0.30, note: '概念原理讲解' },
+        { name: '例题示范', r: 0.20, note: '典型例题讲解示范' },
+        { name: '课堂练习', r: 0.22, note: '学生动手练习，教师巡视' },
+        { name: '交流讨论', r: 0.10, note: '对答案、讨论解法' },
+        { name: '总结拓展', r: 0.08, note: '知识梳理 + 课后作业' },
+      ];
+      ratios.forEach(r => {
+        result.push({ name: r.name, duration: Math.max(30, Math.round(totalSeconds * r.r / 30) * 30), note: r.note });
+      });
+    } else if (totalMin <= 50) {
+      const ratios = [
+        { name: '温故导入', r: 0.08, note: '复习回顾 + 情境引入' },
+        { name: '新知探究一', r: 0.22, note: '核心知识讲解（上）' },
+        { name: '互动活动一', r: 0.10, note: '小组讨论 / 互动问答' },
+        { name: '新知探究二', r: 0.22, note: '核心知识讲解（下）' },
+        { name: '例题精讲', r: 0.14, note: '典型例题方法示范' },
+        { name: '巩固练习', r: 0.14, note: '课堂练习与反馈' },
+        { name: '小结作业', r: 0.10, note: '全课总结 + 布置作业' },
+      ];
+      ratios.forEach(r => {
+        result.push({ name: r.name, duration: Math.max(30, Math.round(totalSeconds * r.r / 30) * 30), note: r.note });
+      });
+    } else {
+      // 60+ minutes
+      const ratios = [
+        { name: '课前热身', r: 0.05, note: '出勤检查 / 复习旧知' },
+        { name: '情境导入', r: 0.08, note: '生活情境 / 问题引入' },
+        { name: '新知探究 A', r: 0.17, note: '核心概念讲解与互动' },
+        { name: '课内小憩', r: 0.03, note: '短暂休息、调整状态' },
+        { name: '新知探究 B', r: 0.17, note: '原理深化 + 拓展延伸' },
+        { name: '典型例题', r: 0.15, note: '梯度例题讲解示范' },
+        { name: '分组活动', r: 0.15, note: '小组协作 / 练习应用' },
+        { name: '成果展示', r: 0.08, note: '小组汇报、互评' },
+        { name: '总结反思', r: 0.07, note: '知识体系梳理 + 方法提炼' },
+        { name: '布置作业', r: 0.05, note: '分层作业布置' },
+      ];
+      ratios.forEach(r => {
+        result.push({ name: r.name, duration: Math.max(30, Math.round(totalSeconds * r.r / 30) * 30), note: r.note });
+      });
+    }
+  }
+
+  // Adjust for rounding errors
+  let currentSum = result.reduce((s, r) => s + r.duration, 0);
+  if (currentSum !== totalSeconds && result.length > 0) {
+    result[result.length - 1].duration += (totalSeconds - currentSum);
+  }
+
+  return result;
+}
+
+function renderAIResult(outline, topic) {
+  const list = document.getElementById('aiResultList');
+  const total = outline.reduce((s, r) => s + r.duration, 0);
+  list.innerHTML = `
+    <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">
+      主题：${escapeHtml(topic)} · 总时长 ${formatTime(total)}
+    </div>
+    ${outline.map((s, i) => `
+      <div class="ai-stage-item">
+        <div>
+          <span style="display:inline-block;width:20px;height:20px;background:var(--accent-light);color:var(--accent);border-radius:50%;text-align:center;font-size:11px;line-height:20px;margin-right:8px;font-weight:600;">${i+1}</span>
+          <span class="ai-stage-name">${escapeHtml(s.name)}</span>
+          ${s.note ? `<div style="font-size:11px;color:var(--text-tertiary);margin-top:2px;padding-left:28px;">${escapeHtml(s.note)}</div>` : ''}
+        </div>
+        <div class="ai-stage-duration">${formatTime(s.duration)}</div>
+      </div>
+    `).join('')}
+  `;
+}
+
+function importAIOutline() {
+  if (state.aiOutline.length === 0) return;
+
+  if (state.stages.length > 0) {
+    if (!confirm('导入后将替换现有阶段，是否继续？')) return;
+  }
+
+  stopTimer();
+  state.currentStageIndex = -1;
+  state.stages = state.aiOutline.map((s, i) => ({
+    id: Date.now() + i,
+    name: s.name,
+    duration: s.duration,
+    note: s.note || '',
+    status: 'pending'
+  }));
+  state.remainingSeconds = 0;
+  state.elapsedTotal = 0;
+
+  renderStages();
+  updateTimerDisplay();
+  updateTotalDuration();
+  closeModal('aiModal');
+  showToast(`已导入 ${state.stages.length} 个阶段`, 'success');
+}
+
+// ==================== Init ====================
+function init() {
+  renderStages();
+  renderNotes();
+  renderRecordings();
+  updateTimerDisplay();
+  updateTotalDuration();
+}
+
+init();
+</script>
+</body>
+</html>
