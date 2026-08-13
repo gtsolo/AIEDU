@@ -16,6 +16,14 @@
   <a href="#readme-en">English</a>
 </p>
 
+> 🤖 **交给 Agent 自动完成提交？** 本项目已准备好 Trae Work 模式可直接执行的完整材料包：
+> - 📋 规格说明 [docs/work/spec.md](docs/work/spec.md) · 目标/边界/验收标准
+> - 📝 执行任务 [docs/work/tasks.md](docs/work/tasks.md) · T1~T6 逐个子步骤
+> - ✅ 验收清单 [docs/work/check_list.md](docs/work/check_list.md) · 30+ 项逐项打勾
+> - 📦 提交数据 [docs/work/submission_payload.json](docs/work/submission_payload.json) · 结构化字段待填 URL
+>
+> 在 Trae 中切换到 Work 模式，读取 `docs/work/spec.md` 作为 Spec，`docs/work/tasks.md` 作为 Tasks，`docs/work/check_list.md` 作为 CheckList，可一键启动自动化提交流程。
+
 ---
 
 <a id="readme-cn"></a>

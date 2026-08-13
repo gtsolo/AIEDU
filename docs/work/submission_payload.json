@@ -1,0 +1,47 @@
+{
+  "$schema": "courseclip-goai-work-v1",
+  "_readme": "本文件由 Trae Work 模式在 T5 任务阶段维护：T1 完成填 repo_url，T2 完成填 demo_url，T4 完成填 video_url，T6 用来提交到 GOAI 系统",
+  "submission": {
+    "work_title_cn": "课拍 CourseClip — 面向录课老师的零依赖一体化录课工作台",
+    "work_title_en": "CourseClip - A Zero-Dependency All-in-One Recording Workstation for Educators",
+    "track": "赛题四 · AI + 教育",
+    "track_en": "Track 4: AI + Education",
+    "description_cn": "作品名称：课拍 CourseClip — 面向录课老师的零依赖一体化录课工作台。作品简介：课拍 CourseClip 是一款纯前端单 HTML 文件的浏览器端工具，面向需要录制课程视频的老师群体。它将传统录课场景中分散的手机计时器、录音软件、课件窗口和笔记文档四个独立工具，整合到同一个 Apple 风格的工作台中。双击一个 HTML 文件即可使用，无需安装软件、无需注册账号、不依赖任何后端服务，所有数据（录音、录像、笔记）全部保存在本地浏览器内存中。核心功能：① 课程节奏计时：一节课拆分为多个阶段独立倒计时，时间到弹窗+蜂鸣温和提醒，支持加2分钟延时或进入下一阶段，解决导入讲太久、前松后紧的节奏难题。② 录音录像+课件对照：左边预览 PDF 课件或共享屏幕，右边看计时+笔记+录制控制，一个窗口完成所有操作，笔记自动标记当前阶段+剩余时间时间戳。③ AI 生成课程大纲：输入课程主题、时长(7档)、受众(5级)、课型(5种)，本地算法按教育规律智能分配各环节时间，一键导入计时器，解决新老师不会切时间的痛点。技术特色：单文件零依赖(无 node_modules/无后端)、浏览器原生 API (MediaRecorder / getUserMedia / getDisplayMedia)、Web Audio 合成提示音(无音频文件)、Light/Dark 自动切换。解决的教育痛点：新老教师录课节奏失控、课件录音分离课后难以复盘、新手备课环节时间分配无参考。可惠及千万一线教师、网课讲师、教培行业。",
+    "description_cn_word_count": 498,
+    "description_en": "Title: CourseClip - A Zero-dependency All-in-One Recording Workstation for Teachers. Abstract: CourseClip is a pure-frontend single-HTML-file browser tool designed for educators who record video lessons. It consolidates four traditionally scattered tools — smartphone timer, recording software, slides viewer, and note-taking — into one elegant Apple-style workstation. Users simply double-click the HTML file: no installation, no sign-up, no backend required. All data (audio, video, notes) stays in local browser memory only. Core Features: (1) Stage-based pacing timer: break a lesson into timed stages with gentle alerts; extend +2min or jump to next stage; solves the too-long intro, rushed ending problem. (2) Recording + courseware side-by-side: PDF or screen-share on the left, timer + notes + recording controls on the right, with auto-timestamped notes tagged by current stage. (3) AI-powered lesson outline generator: input topic, duration, audience, lesson type, get a pedagogically-sound time-allocation template, one-click import into timer. Tech: Single-file, zero-dependency, native MediaRecorder / getUserMedia APIs, Web Audio synthesized alert tones, auto Light/Dark theme support. Solved real pain points: pacing control for novice and veteran teachers, easy review with aligned slides-and-notes, reference time templates for new teachers. Accessible to millions of K12, higher-ed, and vocational training educators worldwide.",
+    "keywords": ["AI教育", "录课工具", "教师助手", "零依赖", "开源", "GOAI", "CourseClip", "Web应用"],
+    "repo_url": "https://github.com/<YOUR_GITHUB_USERNAME>/goai-courseclip",
+    "_repo_url_note": "由 Work 模式 Task 1 完成后替换尖括号占位内容",
+    "demo_url": "https://<DEPLOYED_DOMAIN>/CourseClip.html",
+    "_demo_url_note": "由 Work 模式 Task 2 完成后替换尖括号占位内容，必须是 HTTPS",
+    "video_url": "",
+    "_video_url_note": "可选加分项，Task 4 完成演示视频并上传后填入，留空表示不提供",
+    "team_name": "",
+    "team_members": [],
+    "contact_email": ""
+  },
+  "deploy": {
+    "platform": "",
+    "_platform_allowed_values": ["Vercel", "GitHub Pages", "Netlify", "OSS_ALIYUN", "OSS_TENCENT", "Localhost"],
+    "deployed_at": "",
+    "_deployed_at_format": "ISO 8601 with TZ，例 2026-08-15T20:30:00+08:00",
+    "deploy_commit_sha": "8f304e5",
+    "notes": ""
+  },
+  "verification": {
+    "repo_public_access": false,
+    "demo_https_valid": false,
+    "demo_core_features_visible": false,
+    "readme_links_clickable": false,
+    "_note": "以上 4 项由 Work 模式 Task 3 完成后自动改为 true"
+  },
+  "meta": {
+    "workflow": "courseclip-goai-preliminary",
+    "version": "1.0",
+    "generated_by": "Trae Chat Mode - Pre-Work material preparation",
+    "generated_at": "2026-08-14T17:30:00+08:00",
+    "last_updated_by": "",
+    "last_updated_at": "",
+    "deadline": "2026-08-16T18:00:00+08:00"
+  }
+}
