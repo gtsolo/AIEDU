@@ -119,7 +119,7 @@ serve .
 > 💡 **为什么要用本地服务器？** MediaRecorder、屏幕共享、摄像头、麦克风等 Web API 在某些浏览器的 `file://` 协议下会被安全限制。如果要测试录制功能，建议使用方式二。
 
 #### 方式三：在线 Demo
-- Demo 链接（请自行部署后填写）：`_______________________`
+- Demo 链接（请自行部署后填写）：`https://gtsolo.github.io/AIEDU/CourseClip.html`
 - 本仓库 `CourseClip.html` 是自包含文件，可上传到任意静态托管（GitHub Pages / Vercel / Netlify / OSS）直接运行，详见 [DEPLOY.md](docs/DEPLOY.md)
 
 ### 📁 项目结构
@@ -232,7 +232,7 @@ npx serve .
 > 💡 Some browsers restrict MediaRecorder / camera / mic / screen-share under `file://`. Use a local server to test recording features.
 
 #### Option 3: Online Demo
-- Demo URL (fill in after deployment): `_______________________`
+- Demo URL (fill in after deployment): `https://gtsolo.github.io/AIEDU/CourseClip.html`
 - `CourseClip.html` is fully self-contained — upload to any static host (GitHub Pages / Vercel / Netlify / OSS) and it runs directly. See [DEPLOY.md](docs/DEPLOY.md) for details.
 
 ### 📁 Project Structure
