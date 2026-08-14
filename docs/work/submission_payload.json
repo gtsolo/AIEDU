@@ -10,10 +10,10 @@
     "description_cn_word_count": 498,
     "description_en": "Title: CourseClip - A Zero-dependency All-in-One Recording Workstation for Teachers. Abstract: CourseClip is a pure-frontend single-HTML-file browser tool designed for educators who record video lessons. It consolidates four traditionally scattered tools — smartphone timer, recording software, slides viewer, and note-taking — into one elegant Apple-style workstation. Users simply double-click the HTML file: no installation, no sign-up, no backend required. All data (audio, video, notes) stays in local browser memory only. Core Features: (1) Stage-based pacing timer: break a lesson into timed stages with gentle alerts; extend +2min or jump to next stage; solves the too-long intro, rushed ending problem. (2) Recording + courseware side-by-side: PDF or screen-share on the left, timer + notes + recording controls on the right, with auto-timestamped notes tagged by current stage. (3) AI-powered lesson outline generator: input topic, duration, audience, lesson type, get a pedagogically-sound time-allocation template, one-click import into timer. Tech: Single-file, zero-dependency, native MediaRecorder / getUserMedia APIs, Web Audio synthesized alert tones, auto Light/Dark theme support. Solved real pain points: pacing control for novice and veteran teachers, easy review with aligned slides-and-notes, reference time templates for new teachers. Accessible to millions of K12, higher-ed, and vocational training educators worldwide.",
     "keywords": ["AI教育", "录课工具", "教师助手", "零依赖", "开源", "GOAI", "CourseClip", "Web应用"],
-    "repo_url": "https://github.com/<YOUR_GITHUB_USERNAME>/goai-courseclip",
-    "_repo_url_note": "由 Work 模式 Task 1 完成后替换尖括号占位内容",
-    "demo_url": "https://<DEPLOYED_DOMAIN>/CourseClip.html",
-    "_demo_url_note": "由 Work 模式 Task 2 完成后替换尖括号占位内容，必须是 HTTPS",
+    "repo_url": "https://github.com/gtsolo/AIEDU",
+    "_repo_url_note": "T1 completed: repo pushed to github.com/gtsolo/AIEDU (Public)",
+    "demo_url": "https://gtsolo.github.io/AIEDU/CourseClip.html",
+    "_demo_url_note": "T2 completed: GitHub Pages enabled, HTTPS enforced, AI modal verified",
     "video_url": "",
     "_video_url_note": "可选加分项，Task 4 完成演示视频并上传后填入，留空表示不提供",
     "team_name": "",
@@ -21,27 +21,27 @@
     "contact_email": ""
   },
   "deploy": {
-    "platform": "",
+    "platform": "GitHub Pages",
     "_platform_allowed_values": ["Vercel", "GitHub Pages", "Netlify", "OSS_ALIYUN", "OSS_TENCENT", "Localhost"],
-    "deployed_at": "",
+    "deployed_at": "2026-08-14T17:38:00+08:00",
     "_deployed_at_format": "ISO 8601 with TZ，例 2026-08-15T20:30:00+08:00",
-    "deploy_commit_sha": "8f304e5",
-    "notes": ""
+    "deploy_commit_sha": "3d063da",
+    "notes": "GitHub Pages enabled: main branch / root dir, Enforce HTTPS checked"
   },
   "verification": {
-    "repo_public_access": false,
-    "demo_https_valid": false,
-    "demo_core_features_visible": false,
-    "readme_links_clickable": false,
-    "_note": "以上 4 项由 Work 模式 Task 3 完成后自动改为 true"
+    "repo_public_access": true,
+    "demo_https_valid": true,
+    "demo_core_features_visible": true,
+    "readme_links_clickable": true,
+    "_note": "All 4 items verified by Trae Work Mode on 2026-08-14"
   },
   "meta": {
     "workflow": "courseclip-goai-preliminary",
     "version": "1.0",
     "generated_by": "Trae Chat Mode - Pre-Work material preparation",
     "generated_at": "2026-08-14T17:30:00+08:00",
-    "last_updated_by": "",
-    "last_updated_at": "",
+    "last_updated_by": "Trae Work Mode",
+    "last_updated_at": "2026-08-14T17:45:00+08:00",
     "deadline": "2026-08-16T18:00:00+08:00"
   }
 }
