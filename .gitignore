@@ -48,6 +48,7 @@ trae-training.zip
 *.doc
 *.avi
 *.mp4
+!embodied_labarm/assets/**/*.mp4
 *.rar
 *.zip
 !docs/**/*.zip
