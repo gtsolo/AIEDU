@@ -460,4 +460,8 @@ LabArm-Embodied/
         └── submission_receipt.txt      ← 提交回执（上传后填写）
 ```
 
-> 🚀 **下一步**：打开 [LabArm_Demo.html](LabArm_Demo.html) 体验可交互仿真，或进入 [docs/work/tasks.md](docs/work/tasks.md) 查看任务执行顺序。
+> 🚀 **下一步**：
+> - 🌐 **在线 Demo (GitHub Pages, HTTPS)**：👉 [https://gtsolo.github.io/AIEDU/embodied_labarm/LabArm_Demo.html](https://gtsolo.github.io/AIEDU/embodied_labarm/LabArm_Demo.html)
+> - 💻 **本地体验**：双击 [LabArm_Demo.html](LabArm_Demo.html) 即可打开（零依赖、纯离线也可用）
+> - 📂 **GitHub 源码仓库**：[gtsolo/AIEDU · embodied_labarm/](https://github.com/gtsolo/AIEDU/tree/main/embodied_labarm)
+> - 📋 或进入 [docs/work/tasks.md](docs/work/tasks.md) 查看任务执行顺序。
