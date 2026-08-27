@@ -1,0 +1,55 @@
+# GOAI 参赛提交回执 | Submission Receipt
+
+> 项目：LabArm-Embodied（LABARM-EMBODIED-V1）
+>
+> 赛道：AI + 具身智能 · 具身智能复杂接触操作与机构交互
+>
+> 组别：高校组
+>
+> 本文件：**完成上传后，手动填写本文件所有标 [待填] 项**，作为本地留档。
+
+---
+
+## 1. 上传基本信息
+
+| 字段 | 值 |
+|---|---|
+| 提交时间（北京时间） | [待填，例：2026-09-10 20:38:12] |
+| 提交人 | [待填，例：李杜] |
+| 报名系统账号 / 报名编号 | [待填] |
+| 作品附件 zip 文件名 | GOAI_LabArm_参赛作品.zip |
+| zip 大小（MB） | [待填，应 < 50MB] |
+| zip SHA256 校验和 | [待填，PowerShell：`Get-FileHash GOAI_LabArm_参赛作品.zip -Algorithm SHA256`] |
+| 作品 Demo 在线链接（如有部署） | [待填，例：https://gtsolo.github.io/.../LabArm_Demo.html] |
+| 代码仓库 URL（如有） | [待填，公开仓库] |
+
+---
+
+## 2. 提交物内部核对清单（上传前已勾选）
+
+- [ ] README.md 打开正常（中文 ≥6000 字，含英文摘要）
+- [ ] LabArm_Demo.html 双击可打开、4 个任务动画均正常播放
+- [ ] assets/architecture.svg 正常显示 5 层架构 + VLA 3 节点
+- [ ] assets/vla_flowchart.svg 正常显示决策流程与恢复策略
+- [ ] docs/work/ 下 spec.md、tasks.md、check_list.md、submission_payload.json 齐全
+- [ ] zip 内无乱码文件，路径名全部为 ASCII 或 UTF-8（无 WSL / 乱码路径）
+- [ ] 方案书 5 个评分维度都有独立章节和量化内容
+
+---
+
+## 3. 提交页面截图
+
+- 截图路径：`docs/work/screenshots/submit_success.png`
+- 状态：[待填：已留存 / 待截取]
+
+---
+
+## 4. 备注 / 异常记录
+
+- [ ] 无异常，一次上传成功
+- [ ] 异常 1：[描述 + 处理方式]
+- [ ] 异常 2：[描述 + 处理方式]
+
+---
+
+_本文件由 Work 模式自动生成，最后更新 2026-08-27_

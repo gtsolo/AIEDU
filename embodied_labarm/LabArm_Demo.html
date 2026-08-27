@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>LabArm-Embodied · 可交互仿真演示 Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root{
+    --bg:#0b1020; --bg2:#111836; --card:#161e44; --text:#e6ecff;
+    --muted:#9fb0d9; --accent:#6366f1; --accent2:#ec4899; --good:#10b981; --warn:#f59e0b; --bad:#ef4444;
+    --border:#2a3572;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);min-height:100vh}
+  header{padding:18px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+  header h1{margin:0;font-size:20px}
+  header h1 small{display:block;color:var(--muted);font-weight:500;margin-top:4px;font-size:12px}
+  .pill{padding:6px 14px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--accent2));font-size:12px;font-weight:600;color:white;white-space:nowrap}
+  main{max-width:1440px;margin:0 auto;padding:22px 28px 60px;display:grid;grid-template-columns:320px 1fr 340px;gap:18px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .card h2{margin:0 0 12px;font-size:15px;color:#cdd7ff}
+  .ops{display:flex;flex-direction:column;gap:10px}
+  .op{display:flex;align-items:center;gap:12px;padding:12px;border-radius:12px;border:1px solid var(--border);background:#1b2554;cursor:pointer;transition:.2s}
+  .op:hover{transform:translateY(-2px);border-color:var(--accent)}
+  .op.active{border-color:var(--accent2);background:linear-gradient(90deg,rgba(236,72,153,.15),rgba(99,102,241,.15));box-shadow:0 0 0 2px rgba(236,72,153,.25)}
+  .op .ic{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:20px;background:rgba(255,255,255,.08);flex-shrink:0}
+  .op .meta b{display:block;font-size:14px;margin-bottom:2px}
+  .op .meta span{color:var(--muted);font-size:11.5px}
+  .stage-wrap{display:flex;flex-direction:column;gap:14px}
+  .stage-canvas{border-radius:14px;background:radial-gradient(circle at 30% 20%,#1a2359 0%,#0c1130 80%);border:1px solid var(--border);overflow:hidden}
+  canvas{display:block;width:100%;height:auto}
+  .controls{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:#253070;color:var(--text);font-weight:600;cursor:pointer;transition:.15s;font-size:13px}
+  .btn:hover{background:#2e3c8a;border-color:var(--accent)}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));border:none}
+  .btn.ghost{background:transparent}
+  .panel{display:flex;flex-direction:column;gap:14px}
+  .log{height:220px;overflow:auto;font-family:"Consolas",monospace;font-size:11.5px;background:#0a0f2a;border:1px solid var(--border);border-radius:10px;padding:10px;line-height:1.55}
+  .log .t{color:var(--muted)}
+  .log .i{color:#93c5fd}
+  .log .vla{color:#f0abfc;font-weight:600}
+  .log .ok{color:var(--good)}
+  .log .warn{color:var(--warn)}
+  .log .err{color:var(--bad)}
+  .ft-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .ft-label{width:54px;font-size:11.5px;color:var(--muted);font-family:"Consolas",monospace}
+  .bar{flex:1;height:10px;background:#0c1230;border-radius:999px;overflow:hidden;border:1px solid var(--border)}
+  .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--good),var(--accent));transition:width .15s}
+  .bar > i.hi{background:linear-gradient(90deg,var(--warn),var(--bad))}
+  .ft-value{width:70px;text-align:right;font-size:11.5px;font-family:"Consolas",monospace;color:#c4d2ff}
+  .metric{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .metric .m{background:#0d1336;border:1px solid var(--border);padding:10px;border-radius:10px}
+  .metric .m .k{font-size:11px;color:var(--muted);margin-bottom:3px}
+  .metric .m .v{font-size:18px;font-weight:700;font-family:"Consolas",monospace}
+  .metric .m.good .v{color:var(--good)}
+  .metric .m.warn .v{color:var(--warn)}
+  .metric .m.accent .v{color:var(--accent2)}
+  .sliders{display:flex;flex-direction:column;gap:10px}
+  .slider label{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:4px}
+  .slider input{width:100%;accent-color:var(--accent2)}
+  .badge{display:inline-block;padding:3px 8px;border-radius:6px;background:rgba(99,102,241,.18);color:#c7d2fe;font-size:10.5px;font-weight:600;margin-left:6px}
+  .world-state{background:#0d1336;border:1px solid var(--border);border-radius:10px;padding:12px}
+  .world-state h3{margin:0 0 8px;font-size:13px;color:#c4b5fd}
+  .ws-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;color:#c7d2fe;font-family:"Consolas",monospace}
+  .legend{font-size:11px;color:var(--muted);line-height:1.6}
+  @media(max-width:1100px){main{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🦾 LabArm-Embodied · 可交互仿真演示 Demo
+    <small>高校智慧实验室复杂接触操作系统 · VLA 大模型 3 节点 · 4 类机构操作</small>
+  </h1>
+  <div class="pill">高校组 · GOAI 初赛 Demo</div>
+</header>
+
+<main>
+  <!-- 左栏：任务卡片列表 -->
+  <section class="card">
+    <h2>🎯 选择接触操作任务 <span class="badge">4/4 覆盖</span></h2>
+    <div class="ops" id="ops">
+      <div class="op active" data-op="O1">
+        <div class="ic">🔐</div>
+        <div class="meta"><b>O1 · 门锁钥匙开启</b><span>同轴公差 0.5mm · 旋转 90° · 扭矩阈值</span></div>
+      </div>
+      <div class="op" data-op="O2">
+        <div class="ic">🗄️</div>
+        <div class="meta"><b>O2 · 抽屉推拉 320mm</b><span>摩擦变化 ±40% · 满载 5kg · 世界模型推断行程</span></div>
+      </div>
+      <div class="op" data-op="O3">
+        <div class="ic">🎛️</div>
+        <div class="meta"><b>O3 · 旋钮阀门 3 档旋转</b><span>0°→90°→180°→270° · 卡滞扭矩峰值检测</span></div>
+      </div>
+      <div class="op" data-op="O4">
+        <div class="ic">🧪</div>
+        <div class="meta"><b>O4 · 试管架 24 孔插拔</b><span>间距 18mm · 插入 25mm · 螺旋搜索对中</span></div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:22px">🌪️ 鲁棒性 · 扰动开关</h2>
+    <div class="sliders">
+      <div class="slider">
+        <label>目标位置偏差 <b id="lblA">0 mm</b></label>
+        <input id="sA" type="range" min="0" max="10" step="1" value="0">
+      </div>
+      <div class="slider">
+        <label>摩擦系数倍率 <b id="lblB">×1.00</b></label>
+        <input id="sB" type="range" min="0.6" max="1.4" step="0.05" value="1.00">
+      </div>
+      <div class="slider">
+        <label>侧向扰动外力 <b id="lblD">0 N</b></label>
+        <input id="sD" type="range" min="0" max="3" step="0.5" value="0">
+      </div>
+    </div>
+
+    <h2 style="margin-top:22px">🎖️ 任务成功率（基线对比）</h2>
+    <div class="metric">
+      <div class="m good"><div class="k">VLA + 世界模型（本方案）</div><div class="v" id="srVLA">-- %</div></div>
+      <div class="m warn"><div class="k">纯视觉/位置基线</div><div class="v" id="srBL">-- %</div></div>
+    </div>
+    <div class="legend" style="margin-top:10px">※ 成功率根据当前扰动值由经验公式实时计算，对应 README §5.3 对照矩阵</div>
+  </section>
+
+  <!-- 中栏：Canvas 动画舞台 -->
+  <section class="stage-wrap">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+        <h2 style="margin:0" id="stageTitle">🔐 O1 · 门锁钥匙开启</h2>
+        <div class="badge" id="phaseBadge">就绪</div>
+      </div>
+      <div class="stage-canvas">
+        <canvas id="stage" width="900" height="520"></canvas>
+      </div>
+      <div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--border)">
+        <div class="controls">
+          <button class="btn primary" id="btnRun">▶ 开始执行</button>
+          <button class="btn" id="btnReset">↻ 重置场景</button>
+          <button class="btn ghost" id="btnAuto">🔁 自动循环演示</button>
+        </div>
+        <div class="legend" id="taskHint">点击「开始执行」查看 VLA 决策 → 接触 → 结果全流程动画</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>🧠 VLA 决策日志 &nbsp;·&nbsp; <span style="color:#f0abfc">大模型介入节点 ①/②/③</span></h2>
+      <div class="log" id="log"></div>
+    </div>
+  </section>
+
+  <!-- 右栏：传感器 + 世界模型 -->
+  <section class="panel">
+    <div class="card">
+      <h2>💪 末端六维力/力矩 F/T 读数</h2>
+      <div id="ft"></div>
+    </div>
+    <div class="card">
+      <h2>🌀 世界模型 · 接触状态推断 <span class="badge">创新点 #1</span></h2>
+      <div class="world-state" id="ws">
+        <h3>Contact-State Diffusion VAE</h3>
+        <div class="ws-row"><span>机构状态：</span><span id="wsState">—</span></div>
+        <div class="ws-row"><span>推断值：</span><span id="wsVal">—</span></div>
+        <div class="ws-row"><span>不确定性 σ：</span><span id="wsUnc">—</span></div>
+        <div class="ws-row"><span>视觉遮挡率：</span><span id="wsOcc">—</span></div>
+      </div>
+      <div class="legend" style="margin-top:8px">当视觉被机构遮挡（抽屉内、旋钮后、孔内），世界模型从 F/T + 关节信号推断不可见状态。</div>
+    </div>
+    <div class="card">
+      <h2>📊 关键性能指标</h2>
+      <div class="metric">
+        <div class="m"><div class="k">平均执行时间 AET</div><div class="v" id="mAET">-- s</div></div>
+        <div class="m accent"><div class="k">峰值接触力 |Fz|</div><div class="v" id="mFz">-- N</div></div>
+        <div class="m"><div class="k">异常恢复次数 R#</div><div class="v" id="mR">0</div></div>
+        <div class="m good"><div class="k">VLA 决策置信度</div><div class="v" id="mConf">--</div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ================= 配置与数据 ================= */
+const OPS = {
+  O1: { name:"门锁钥匙开启", icon:"🔐", phases:["① VLA 指令解析","② 钥匙对准锁孔","③ 力控插入","④ 扭矩旋转 90°","⑤ 拔出钥匙","⑥ 推开柜门 → 成功 ✅"], color:"#0ea5e9" },
+  O2: { name:"抽屉推拉 320mm", icon:"🗄️", phases:["① VLA 指令解析","② 识别把手抓握","③ 力闭环拉动","④ 拉至 320mm 保持","⑤ 推回 + 5N 闭合","⑥ 判定到位 → 成功 ✅"], color:"#6366f1" },
+  O3: { name:"旋钮阀门 3 档旋转", icon:"🎛️", phases:["① VLA 指令解析","② 捏握旋钮","③ 旋转至 90°(档1)","④ 旋转至 180°(档2)","⑤ 旋转至 270°(档3)","⑥ 档位保持 → 成功 ✅"], color:"#ef4444" },
+  O4: { name:"试管架 24 孔插拔", icon:"🧪", phases:["① VLA 指令解析","② 抓握试管","③ 轴对准 (±1°)","④ 插入深度 25mm","⑤ 停留等待","⑥ 拔出复位 → 成功 ✅"], color:"#f59e0b" }
+};
+
+/* 成功基线与衰减：经验公式拟合 README §5.3 */
+const BASELINE = {
+  O1:{VLA:0.85, BL:0.42},
+  O2:{VLA:0.95, BL:0.68},
+  O3:{VLA:0.90, BL:0.60},
+  O4:{VLA:0.80, BL:0.45}
+};
+function computeSR(op, posOffset_mm, frictionMult, distN){
+  const b = BASELINE[op];
+  const a_penalty_VLA = Math.min(0.18, posOffset_mm * 0.015);
+  const b_penalty_VLA = Math.min(0.12, Math.abs(frictionMult - 1.0) * 0.28);
+  const d_penalty_VLA = Math.min(0.15, distN * 0.045);
+  const vla = Math.max(0.2, b.VLA - a_penalty_VLA - b_penalty_VLA - d_penalty_VLA);
+  const bl  = Math.max(0.05, b.BL - a_penalty_VLA*2.3 - b_penalty_VLA*2.2 - d_penalty_VLA*2.5);
+  return {VLA:vla, BL:bl};
+}
+
+/* ================= 状态 ================= */
+const state = {
+  op:"O1", running:false, auto:false, phase:0, progress:0,
+  success:null, recoveryCount:0, startTime:0, peakFz:0,
+  ft:{Fx:0,Fy:0,Fz:0,Mx:0,My:0,Mz:0},
+  ws:{state:"待机", val:0, unc:0, occ:0},
+  posOffset:0, friction:1.0, dist:0,
+};
+
+/* ================= DOM 引用 ================= */
+const $ = id => document.getElementById(id);
+const canvas = $("stage"), ctx = canvas.getContext("2d");
+
+/* ================= UI 初始化 ================= */
+function updateSliders(){
+  state.posOffset = +$("sA").value;
+  state.friction  = +$("sB").value;
+  state.dist      = +$("sD").value;
+  $("lblA").textContent = state.posOffset.toFixed(0) + " mm";
+  $("lblB").textContent = "×" + state.friction.toFixed(2);
+  $("lblD").textContent = state.dist.toFixed(1) + " N";
+  const {VLA,BL} = computeSR(state.op, state.posOffset, state.friction, state.dist);
+  $("srVLA").textContent = (VLA*100).toFixed(1) + " %";
+  $("srBL" ).textContent = (BL *100).toFixed(1) + " %";
+}
+["sA","sB","sD"].forEach(id=>$(id).addEventListener("input", updateSliders));
+document.querySelectorAll(".op").forEach(el=>{
+  el.addEventListener("click", ()=>{
+    document.querySelectorAll(".op").forEach(e=>e.classList.remove("active"));
+    el.classList.add("active");
+    state.op = el.dataset.op;
+    $("stageTitle").textContent = OPS[state.op].icon + " " + state.op + " · " + OPS[state.op].name;
+    resetRun();
+    updateSliders();
+  });
+});
+$("btnRun").addEventListener("click", startRun);
+$("btnReset").addEventListener("click", ()=>{resetRun();draw()});
+$("btnAuto").addEventListener("click", ()=>{state.auto = !state.auto; $("btnAuto").style.background = state.auto?"linear-gradient(90deg,#ec4899,#6366f1)":""; if(state.auto) startRun();});
+
+/* ================= 日志 ================= */
+function log(msg, cls=""){
+  const box = $("log");
+  const now = new Date();
+  const t = now.toLocaleTimeString("zh-CN",{hour12:false}) + "." + String(now.getMilliseconds()).padStart(3,"0");
+  const line = `<div><span class="t">[${t}]</span> <span class="${cls}">${msg}</span></div>`;
+  box.insertAdjacentHTML("beforeend", line);
+  box.scrollTop = box.scrollHeight;
+}
+
+/* ================= F/T 面板 ================= */
+function renderFT(){
+  const ft = state.ft, wrap = $("ft");
+  const bars = ["Fx","Fy","Fz","Mx","My","Mz"].map(k=>{
+    const v = ft[k], isF = k[0]==="F", max = isF?60:6, pct = Math.min(100, Math.abs(v)/max*100), hi = pct>75;
+    return `<div class="ft-row"><span class="ft-label">${k}</span>
+      <div class="bar"><i style="width:${pct.toFixed(1)}%" class="${hi?"hi":""}"></i></div>
+      <span class="ft-value">${v.toFixed(isF?2:3)} ${isF?"N":"N·m"}</span></div>`;
+  }).join("");
+  wrap.innerHTML = bars;
+}
+
+/* ================= 世界模型面板 ================= */
+function renderWS(){
+  $("wsState").textContent = state.ws.state;
+  $("wsUnc").textContent = state.ws.unc.toFixed(3);
+  $("wsOcc").textContent = (state.ws.occ*100).toFixed(0) + " %";
+  const unit = state.op==="O3"?"°":"mm";
+  $("wsVal").textContent = state.ws.val.toFixed(2) + " " + unit;
+}
+
+/* ================= KPI 面板 ================= */
+function renderKPI(){
+  $("phaseBadge").textContent = state.running ? (OPS[state.op].phases[state.phase]||"执行中") : (state.success===true?"已完成 ✅":state.success===false?"失败 ❌":"就绪");
+  $("mAET").textContent = state.startTime? ((performance.now()-state.startTime)/1000).toFixed(2)+" s":"-- s";
+  $("mFz").textContent = Math.max(state.peakFz, Math.abs(state.ft.Fz)).toFixed(2) + " N";
+  $("mR").textContent = state.recoveryCount;
+  $("mConf").textContent = state.running? (0.78 + Math.random()*0.2).toFixed(2):"--";
+}
+
+/* ================= 画布绘制 ================= */
+function draw(){
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+  drawGrid(W,H);
+  const cx = W/2, cy = H/2 + 20;
+  // 场景背景：实验柜
+  ctx.fillStyle = "rgba(255,255,255,.04)";
+  ctx.fillRect(cx-280, cy-170, 560, 300);
+  ctx.strokeStyle = "#2b3a85"; ctx.lineWidth = 2; ctx.strokeRect(cx-280, cy-170, 560, 300);
+
+  const op = state.op, p = state.progress, phase = state.phase;
+
+  if(op==="O1") drawO1(cx,cy,p,phase);
+  else if(op==="O2") drawO2(cx,cy,p,phase);
+  else if(op==="O3") drawO3(cx,cy,p,phase);
+  else if(op==="O4") drawO4(cx,cy,p,phase);
+
+  // 机械臂底座 + 轮廓
+  drawArm(cx-320, cy+90, state.ft);
+  // 扰动标签
+  ctx.fillStyle = "#94a3b8"; ctx.font = "12px 'Consolas', monospace";
+  ctx.fillText(`Δpos=${state.posOffset}mm, μ×${state.friction.toFixed(2)}, F_dist=${state.dist.toFixed(1)}N`, cx-270, cy-185);
+  // 相位进度条
+  const pTotal = state.phase/(OPS[op].phases.length-1) + p/(OPS[op].phases.length-1)*0.14;
+  ctx.fillStyle = "#1a2359"; ctx.fillRect(cx-270, cy+160, 540, 10);
+  ctx.fillStyle = OPS[op].color; ctx.fillRect(cx-270, cy+160, 540*Math.min(1,pTotal), 10);
+  // 结果图标
+  if(state.success===true){ drawBadge(cx+215, cy-150, "#10b981","✅ OK"); }
+  if(state.success===false){ drawBadge(cx+215, cy-150, "#ef4444","❌ FAIL"); }
+}
+function drawGrid(W,H){
+  ctx.strokeStyle = "rgba(99,102,241,.07)"; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}
+  for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}
+}
+function drawBadge(x,y,color,txt){
+  ctx.save();
+  ctx.fillStyle = color;
+  roundRect(ctx, x, y, 90, 30, 10, true);
+  ctx.fillStyle = "white"; ctx.font = "bold 14px 'Segoe UI'"; ctx.textAlign="center"; ctx.textBaseline="middle";
+  ctx.fillText(txt, x+45, y+15);
+  ctx.restore();
+}
+function roundRect(ctx,x,y,w,h,r,fill){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath(); if(fill) ctx.fill(); else ctx.stroke();
+}
+
+/* --- 各场景绘制函数 --- */
+function drawO1(cx,cy,p,phase){
+  // 柜门
+  ctx.fillStyle = "#3f4e9a";
+  roundRect(ctx, cx-30, cy-120, 280, 220, 10, true);
+  ctx.strokeStyle = "#6b7ee3"; ctx.stroke();
+  // 锁孔位置（带位置偏差扰动）
+  const ox = state.posOffset * 1.2;
+  ctx.save();
+  ctx.translate(cx+190+ox, cy);
+  // 锁底盘
+  ctx.fillStyle = "#cbd5e1";
+  ctx.beginPath(); ctx.arc(0,0,32,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle = "#64748b"; ctx.stroke();
+  // 锁孔
+  ctx.fillStyle = "#1e293b";
+  roundRect(ctx, -6, -12, 12, 24, 3, true);
+
+  // 钥匙（由机械臂末端持有，按 phase 显示插入与旋转）
+  const insertProgress = phase>=3? (phase===3? p : 1) : 0;
+  const rotateDeg = phase>=4? (phase===4? 90*p : 90) : 0;
+  ctx.save();
+  ctx.translate(-10 - 60*(1-insertProgress), 0);
+  ctx.rotate(rotateDeg*Math.PI/180);
+  ctx.fillStyle = "#eab308";
+  roundRect(ctx, -50, -5, 50, 10, 2, true);
+  ctx.fillStyle = "#facc15";
+  roundRect(ctx, 0, -3, 20, 6, 1, true);
+  ctx.restore();
+  ctx.restore();
+
+  // 状态字
+  ctx.fillStyle = "#cbd5e1"; ctx.font = "bold 14px 'Segoe UI'";
+  ctx.fillText("实验柜右门 · 弹子锁", cx-15, cy-135);
+}
+
+function drawO2(cx,cy,p,phase){
+  // 柜体
+  ctx.fillStyle = "#37428e";
+  roundRect(ctx, cx-220, cy-140, 440, 260, 12, true);
+  // 抽屉（按 phase 拉出位移）
+  let travel = 0;
+  if(phase>=3) travel = phase===3 ? 200*p : (phase<=4? 200 : (phase===5? 200*(1-p):0));
+  state.ws.val = Math.max(0,travel*1.6);  // 映射成 mm
+  const dx = state.posOffset*1.2;
+  ctx.save();
+  ctx.translate(travel + dx, 0);
+  ctx.fillStyle = "#667eea";
+  roundRect(ctx, cx-200, cy-60, 300, 130, 10, true);
+  ctx.strokeStyle = "#a5b4fc"; ctx.stroke();
+  // 把手
+  ctx.fillStyle = "#cbd5e1";
+  roundRect(ctx, cx-180, cy, 40, 14, 4, true);
+  // 抽屉内试剂瓶示意
+  ctx.fillStyle = "#f472b6";
+  roundRect(ctx, cx-110, cy-35, 18, 50, 3, true);
+  ctx.fillStyle = "#34d399";
+  roundRect(ctx, cx-80, cy-45, 18, 60, 3, true);
+  ctx.fillStyle = "#fbbf24";
+  roundRect(ctx, cx-50, cy-30, 18, 45, 3, true);
+  ctx.restore();
+  ctx.fillStyle = "#cbd5e1"; ctx.font = "bold 14px 'Segoe UI'";
+  ctx.fillText("中间抽屉 · 320mm 行程导轨", cx-120, cy-155);
+}
+
+function drawO3(cx,cy,p,phase){
+  // 阀门面板
+  ctx.fillStyle = "#2e3a86";
+  roundRect(ctx, cx-180, cy-130, 360, 250, 12, true);
+  // 三根管道
+  ctx.strokeStyle = "#64748b"; ctx.lineWidth = 8;
+  ctx.beginPath(); ctx.moveTo(cx-150,cy-60); ctx.lineTo(cx-150,cy+80); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx,cy-60); ctx.lineTo(cx,cy+80); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+150,cy-60); ctx.lineTo(cx+150,cy+80); ctx.stroke();
+  // 三个旋钮（中间的那个是目标）
+  const knobs = [{x:cx-150, a:0},{x:cx, a:0},{x:cx+150, a:0}];
+  let angle = 0;
+  if(phase>=3) angle = phase===3? 90*p : phase===4? 90+90*p : phase===5? 180+90*p : 270;
+  state.ws.val = angle;
+  knobs[1].a = angle + state.posOffset*0.8;
+  knobs.forEach((k,i)=>{
+    ctx.save(); ctx.translate(k.x, cy-30);
+    ctx.fillStyle = "#0f172a"; ctx.beginPath(); ctx.arc(0,0,38,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle = i===1?"#ef4444":"#94a3b8"; ctx.beginPath(); ctx.arc(0,0,30,0,Math.PI*2); ctx.fill();
+    ctx.rotate(k.a*Math.PI/180);
+    ctx.strokeStyle = "#fff"; ctx.lineWidth=5; ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-24); ctx.stroke();
+    ctx.restore();
+  });
+  // 档位标签
+  ctx.fillStyle = "#94a3b8"; ctx.font = "11px Consolas"; ctx.textAlign="center";
+  ["0°","90°","180°","270°"].forEach((t,i)=>{
+    const r = 58, a = i*90*Math.PI/180 - Math.PI/2;
+    ctx.fillText(t, cx + Math.cos(a)*r, cy-30 + Math.sin(a)*r + 4);
+  });
+  ctx.textAlign="left";
+  ctx.fillStyle = "#cbd5e1"; ctx.font = "bold 14px 'Segoe UI'";
+  ctx.fillText("中央三档阀门 · 目标 270°", cx-160, cy-150);
+}
+
+function drawO4(cx,cy,p,phase){
+  // 试管架 4x6
+  const cols = 6, rows = 4, gap = 46, startX = cx - (cols-1)*gap/2, startY = cy - 40;
+  ctx.fillStyle = "#33418f";
+  roundRect(ctx, startX-30, startY-30, (cols-1)*gap+60, (rows-1)*gap+80, 12, true);
+  // 孔（目标孔位 A3 = 第 1 行 第 3 列）
+  const targetR = 0, targetC = 2;
+  for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+    const x = startX + c*gap, y = startY + r*gap;
+    ctx.fillStyle = (r===targetR && c===targetC)?"rgba(245,158,11,.4)":"rgba(255,255,255,.06)";
+    ctx.beginPath(); ctx.arc(x,y,15,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle = r===targetR&&c===targetC?"#f59e0b":"#48549c"; ctx.lineWidth=2; ctx.stroke();
+  }
+  // 抓取试管
+  const targetX = startX + targetC*gap + state.posOffset*1.0, targetY = startY + targetR*gap;
+  let insertD = 0;
+  if(phase>=4) insertD = phase===4? 30*p : phase===5? 30 : (phase===6? 30*(1-p):0);
+  state.ws.val = insertD*0.83;  // mm
+  ctx.save(); ctx.translate(targetX, targetY - 120 + insertD);
+  // 夹爪
+  ctx.strokeStyle = "#94a3b8"; ctx.lineWidth=5;
+  ctx.beginPath(); ctx.moveTo(-14,-25); ctx.lineTo(-14,35); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(14,-25); ctx.lineTo(14,35); ctx.stroke();
+  // 试管
+  ctx.fillStyle = "rgba(167,139,250,.8)";
+  roundRect(ctx, -9, -10, 18, 70, 9, true);
+  ctx.strokeStyle = "#6d28d9"; ctx.stroke();
+  // 液体
+  ctx.fillStyle = "rgba(52,211,153,.7)";
+  roundRect(ctx, -7, 20, 14, 38, 7, true);
+  ctx.restore();
+  // 目标孔标签
+  ctx.fillStyle = "#f59e0b"; ctx.font = "bold 12px Consolas";
+  ctx.fillText("A3", startX+targetC*gap-7, startY+targetR*gap-24);
+  ctx.fillStyle = "#cbd5e1"; ctx.font = "bold 14px 'Segoe UI'";
+  ctx.fillText("24 孔试管架 · 目标孔 A3 插拔", cx-150, startY-60);
+}
+
+/* 机械臂（简化侧面示意） */
+function drawArm(x,y,ft){
+  const s = 1.0;
+  ctx.save(); ctx.translate(x,y); ctx.scale(s,s);
+  // 底座
+  ctx.fillStyle = "#0f172a"; roundRect(ctx, -36, -16, 72, 22, 6, true);
+  ctx.strokeStyle = "#64748b"; ctx.stroke();
+  // 大臂
+  ctx.strokeStyle = "#6366f1"; ctx.lineWidth=10; ctx.lineCap="round";
+  const a1 = Math.sin(performance.now()*0.001+state.op.charCodeAt(1))*0.1 - 0.3;
+  ctx.save(); ctx.rotate(a1);
+  ctx.beginPath(); ctx.moveTo(0,-4); ctx.lineTo(0,-120); ctx.stroke();
+  // 小臂
+  ctx.translate(0,-120); ctx.rotate(0.6 + Math.sin(performance.now()*0.0013)*0.1);
+  ctx.strokeStyle = "#a78bfa";
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,-110); ctx.stroke();
+  // 末端法兰
+  ctx.translate(0,-110);
+  ctx.fillStyle = "#ec4899"; ctx.beginPath(); ctx.arc(0,0,8,0,Math.PI*2); ctx.fill();
+  // Fz 微小抖动可视化
+  const jitter = Math.max(-4, Math.min(4, ft.Fz*0.18));
+  ctx.translate(0, jitter);
+  // 夹爪
+  ctx.strokeStyle = "#f0abfc"; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(-12,0); ctx.lineTo(-12,22); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(12,0); ctx.lineTo(12,22); ctx.stroke();
+  ctx.restore(); ctx.restore(); ctx.restore();
+}
+
+/* ================= 仿真循环 · 推进阶段 + 合成 F/T + 世界模型 ================= */
+function startRun(){
+  if(state.running) return;
+  const passProb = computeSR(state.op, state.posOffset, state.friction, state.dist).VLA;
+  state.success = Math.random() < passProb ? true : (state.posOffset+state.dist>8? false : Math.random()<passProb);
+  state.running = true; state.phase = 0; state.progress = 0;
+  state.peakFz = 0; state.recoveryCount = 0; state.startTime = performance.now();
+  $("log").innerHTML = "";
+  log(`⚡ VLA 节点 ① 指令解析：用户选择 [${state.op} ${OPS[state.op].name}]`, "vla");
+  setTimeout(()=>stepPhase(), 400);
+  animTick();
+}
+function resetRun(){
+  state.running = false; state.phase = 0; state.progress = 0; state.success = null;
+  state.peakFz = 0; state.recoveryCount = 0; state.startTime = 0;
+  state.ft = {Fx:0,Fy:0,Fz:0,Mx:0,My:0,Mz:0};
+  state.ws = {state:"待机", val:0, unc:0.1, occ:0};
+  renderFT(); renderWS(); renderKPI();
+}
+
+let _logSentOnce = [false,false,false,false,false,false,false];
+function stepPhase(){
+  if(!state.running) return;
+  const op = state.op, phases = OPS[op].phases;
+  if(state.phase >= phases.length){
+    state.running = false;
+    log(state.success?`🎉 任务 [${op}] 成功 · AET=${((performance.now()-state.startTime)/1000).toFixed(2)}s`:`💥 任务 [${op}] 失败，触发人工求助 (HUMAN_HELP)`, state.success?"ok":"err");
+    if(state.auto){
+      setTimeout(()=>{
+        // 自动切换任务
+        const keys = Object.keys(OPS);
+        const next = keys[(keys.indexOf(op)+1) % keys.length];
+        document.querySelector(`.op[data-op="${next}"]`).click();
+        setTimeout(startRun, 500);
+      }, 1200);
+    }
+    return;
+  }
+  const phaseName = phases[state.phase];
+  // VLA 日志
+  if(state.phase===0){
+    log(`📦 VLA 子任务 JSON 生成：{ op:"${op}", safety:"ISO10218-D" } · 置信度 ${(0.86+Math.random()*0.12).toFixed(2)}`, "vla");
+  } else if(state.phase===1){
+    log(`🧠 VLA 节点 ② 操作规划：生成 6 步 Action Token 序列 (MoveL → ContactFz → Rotate → ...)`,"vla");
+  }
+  log(`▶ 进入阶段：${phaseName}`,"i");
+  // 随机触发异常恢复（与扰动成正比）
+  const recoveryProb = Math.min(0.45, (state.posOffset/10)*0.25 + Math.abs(state.friction-1)*0.28 + (state.dist/3)*0.35);
+  if(state.phase>=2 && Math.random() < recoveryProb && state.recoveryCount<2){
+    const recoveries = ["RETRY_BACKOFF (回退重试)","SPIRAL_ALIGN (螺旋搜索)","DITHER_RELEASE (40Hz 微抖)","REGRASP (重新抓取)"];
+    const rec = recoveries[Math.floor(Math.random()*recoveries.length)];
+    log(`⚠ F/T 超限触发接触异常，VLA 节点 ③ 恢复策略：${rec}`,"warn");
+    state.recoveryCount++;
+    log(`🔁 节点 ③ → VLA 条件采样候选恢复策略库 · 5 选 1 完成`,"vla");
+  }
+  state.progress = 0;
+}
+
+function animTick(){
+  if(!state.running) return;
+  // 进度推进（每阶段 0.8~1.5s）
+  const speed = 0.0035 + Math.random()*0.003;
+  state.progress += speed;
+  // 合成 F/T 读数
+  synthesizeFT();
+  // 合成世界模型推断
+  synthesizeWS();
+
+  if(state.progress >= 1){
+    state.phase++;
+    stepPhase();
+  }
+  draw();
+  renderFT(); renderWS(); renderKPI();
+  requestAnimationFrame(animTick);
+}
+
+function synthesizeFT(){
+  const op = state.op, p = state.progress, phase = state.phase;
+  let Fz = 0, Mz = 0, Fx = 0, Fy = 0;
+  // 基础噪声
+  const n = () => (Math.random()-0.5)*0.6;
+  // 按 phase 合成
+  if(op==="O1"){
+    if(phase===2) Fz = 3 + Math.sin(p*Math.PI)*8;           // 对准
+    if(phase===3) Fz = 10 + p*5;                            // 插入阶段
+    if(phase===4) Mz = 0.3 + Math.sin(p*Math.PI)*0.9;       // 扭矩
+    if(phase===6) Fx = -5 - p*3;                            // 推门
+  } else if(op==="O2"){
+    if(phase===3) Fx = -8*state.friction - p*6*state.friction; // 拉动
+    if(phase===5) Fx =  5*state.friction + p*3;                // 推回
+    if(phase>=3 && p<0.5) Fz = 2;                              // 重力补偿
+  } else if(op==="O3"){
+    if(phase===2) Fz = 6 + p*5;                                // 捏握按压
+    if(phase>=3 && phase<=5){ Mz = 0.2 + Math.sin(p*Math.PI*2)*0.85; if(Math.abs(p-0.5)<0.05) Mz *= 1.8; }
+  } else if(op==="O4"){
+    if(phase===3) Fz = 3;                                      // 对中
+    if(phase===4) Fz = 8 + p*6;                                // 插入
+    if(phase===6) Fz = -6 - p*5;                               // 拔出
+  }
+  // 叠加扰动外力
+  Fx += state.dist * Math.sin(performance.now()*0.006);
+  Fy += state.dist * Math.cos(performance.now()*0.007)*0.7;
+  // 位置偏差引起的附加切向力
+  Fx += state.posOffset * 0.35 * (Math.random()-.5);
+  Fy += state.posOffset * 0.35 * (Math.random()-.5);
+  state.ft = {
+    Fx: Fx + n(), Fy: Fy + n(), Fz: Fz + n(),
+    Mx: -Fy*0.11 + n()*0.04, My: Fx*0.11 + n()*0.04, Mz: Mz + n()*0.06
+  };
+  state.peakFz = Math.max(state.peakFz, Math.abs(Fz));
+}
+
+function synthesizeWS(){
+  const p = state.progress, phase = state.phase, op = state.op;
+  const labelMap = {
+    O1:["解析子任务","对准锁孔","插入钥匙 → "+(state.ws.val).toFixed(1)+"mm","旋转中","拔出钥匙","推开柜门"],
+    O2:["解析子任务","抓握把手","拉动中 → "+state.ws.val.toFixed(1)+"mm","保持最大行程","推回中 → "+state.ws.val.toFixed(1)+"mm","闭合判定"],
+    O3:["解析子任务","捏握旋钮","→ 档1 90°","→ 档2 180°","→ 档3 270°","档位保持"],
+    O4:["解析子任务","抓握试管","轴对准","插入 "+state.ws.val.toFixed(1)+"mm","停留等待","拔出复位"]
+  };
+  state.ws.state = (labelMap[op][phase]) || "—";
+  state.ws.occ = phase<1? 0.1 : phase<2? 0.3 : phase<5? 0.8+Math.random()*0.1 : 0.6;
+  state.ws.unc = 0.08 + state.ws.occ*0.22 + Math.abs(state.friction-1)*0.05 + state.dist*0.03;
+}
+
+/* ================= 启动初始渲染 ================= */
+resetRun();
+updateSliders();
+// 启动空闲动画循环（只画，不改逻辑状态）
+(function idleLoop(){
+  if(!state.running){ draw(); }
+  requestAnimationFrame(idleLoop);
+})();
+</script>
+</body>
+</html>

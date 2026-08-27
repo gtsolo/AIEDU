@@ -1,0 +1,155 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 620" font-family="'Segoe UI', 'PingFang SC', sans-serif">
+  <defs>
+    <linearGradient id="bgG" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0f7ff"/>
+      <stop offset="100%" stop-color="#eef2ff"/>
+    </linearGradient>
+    <linearGradient id="percept" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#bae6fd"/>
+      <stop offset="100%" stop-color="#7dd3fc"/>
+    </linearGradient>
+    <linearGradient id="fusion" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c7d2fe"/>
+      <stop offset="100%" stop-color="#a5b4fc"/>
+    </linearGradient>
+    <linearGradient id="vla" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fca5a5"/>
+      <stop offset="100%" stop-color="#f87171"/>
+    </linearGradient>
+    <linearGradient id="plan" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fcd34d"/>
+      <stop offset="100%" stop-color="#fbbf24"/>
+    </linearGradient>
+    <linearGradient id="ctrl" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#86efac"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <!-- 背景 -->
+  <rect x="0" y="0" width="1100" height="620" fill="url(#bgG)" rx="16"/>
+  <text x="40" y="46" font-size="24" font-weight="700" fill="#0f172a">LabArm-Embodied 技术架构图 · 五层流水线</text>
+  <text x="40" y="72" font-size="14" fill="#475569">Perception → Fusion → VLA Decision → Planning → Control &amp; Execution</text>
+
+  <!-- 各层（从下到上画，感知在底部，控制在上） -->
+  <!-- L1 感知层 -->
+  <rect x="40" y="500" width="1020" height="90" rx="14" fill="url(#percept)" stroke="#0ea5e9" stroke-width="2"/>
+  <text x="60" y="532" font-size="16" font-weight="700" fill="#0c4a6e">L1 · 感知层 Perception</text>
+  <g font-size="14" fill="#082f49">
+    <rect x="70" y="548" width="280" height="30" rx="8" fill="#fff" stroke="#0284c7"/>
+    <text x="86" y="569">📷 RGB-D 腕部相机 (224×224, σ=2mm)</text>
+    <rect x="370" y="548" width="280" height="30" rx="8" fill="#fff" stroke="#0284c7"/>
+    <text x="386" y="569">💪 六维 F/T 传感器 (500Hz, 0.05N)</text>
+    <rect x="670" y="548" width="360" height="30" rx="8" fill="#fff" stroke="#0284c7"/>
+    <text x="686" y="569">⚙ 7DoF 关节编码器 (2³² rad 分辨率)</text>
+  </g>
+
+  <!-- L2 融合层 -->
+  <rect x="40" y="398" width="1020" height="86" rx="14" fill="url(#fusion)" stroke="#6366f1" stroke-width="2"/>
+  <text x="60" y="430" font-size="16" font-weight="700" fill="#312e81">L2 · 多模态融合层 Fusion</text>
+  <g font-size="14" fill="#1e1b4b">
+    <rect x="70" y="446" width="640" height="28" rx="8" fill="#fff" stroke="#4f46e5"/>
+    <text x="86" y="465">🧠 Perceiver IO 交叉注意力 · 视觉(256d) + F/T(64d) + 关节(64d) → 512d Tokens</text>
+    <rect x="730" y="446" width="300" height="28" rx="8" fill="#fff" stroke="#4f46e5"/>
+    <text x="746" y="465">⏱ 50ms 滑窗 · T=10 · 接触事件检测 ≤20ms</text>
+  </g>
+
+  <!-- L3 VLA 决策层（宽一点，左右两侧突出世界模型） -->
+  <rect x="40" y="256" width="700" height="126" rx="14" fill="url(#vla)" stroke="#dc2626" stroke-width="2.5"/>
+  <text x="60" y="290" font-size="17" font-weight="700" fill="#450a0a">L3 · VLA 大模型决策层 VLA Decision</text>
+  <g font-size="13" fill="#1c1917">
+    <rect x="60" y="306" width="210" height="62" rx="8" fill="#fff7ed" stroke="#ea580c"/>
+    <text x="72" y="328" font-weight="700" fill="#9a3412">① 指令解析节点</text>
+    <text x="72" y="346" fill="#7c2d12">NL → 子任务 JSON (InternVL2-VL)</text>
+    <text x="72" y="361" fill="#7c2d12">格式：JSON Schema 强校验</text>
+
+    <rect x="285" y="306" width="210" height="62" rx="8" fill="#fff7ed" stroke="#ea580c"/>
+    <text x="297" y="328" font-weight="700" fill="#9a3412">② 操作规划节点</text>
+    <text x="297" y="346" fill="#7c2d12">子任务 → Action Token 序列</text>
+    <text x="297" y="361" fill="#7c2d12">MoveL/ContactFz/Rotate + 参数</text>
+
+    <rect x="510" y="306" width="210" height="62" rx="8" fill="#fff7ed" stroke="#ea580c"/>
+    <text x="522" y="328" font-weight="700" fill="#9a3412">③ 异常恢复节点</text>
+    <text x="522" y="346" fill="#7c2d12">F/T 超限 → 5 类恢复策略</text>
+    <text x="522" y="361" fill="#7c2d12">Backoff / Spiral / Dither...</text>
+  </g>
+
+  <!-- 世界模型侧块 -->
+  <rect x="760" y="256" width="300" height="126" rx="14" fill="#fff1f2" stroke="#e11d48" stroke-width="2"/>
+  <text x="780" y="290" font-size="15" font-weight="700" fill="#9f1239">🌀 世界模型 (创新点 #1)</text>
+  <text x="780" y="312" font-size="13" fill="#881337">Contact-State Diffusion VAE</text>
+  <text x="780" y="332" font-size="13" fill="#881337">输入：F/T 时序 + 关节编码</text>
+  <text x="780" y="352" font-size="13" fill="#881337">推断：抽屉行程/旋钮档位/插拔深度</text>
+  <text x="780" y="372" font-size="12" font-style="italic" fill="#9d174d">强遮挡场景 RMSE 1.8mm / 2.3°</text>
+
+  <!-- L4 规划层 -->
+  <rect x="40" y="160" width="1020" height="82" rx="14" fill="url(#plan)" stroke="#d97706" stroke-width="2"/>
+  <text x="60" y="192" font-size="16" font-weight="700" fill="#78350f">L4 · 运动规划层 Planning</text>
+  <g font-size="14" fill="#451a03">
+    <rect x="70" y="208" width="240" height="26" rx="8" fill="#fff" stroke="#b45309"/>
+    <text x="84" y="226">🗺 RRT-Connect 全局路径 (O1/O2)</text>
+    <rect x="330" y="208" width="240" height="26" rx="8" fill="#fff" stroke="#b45309"/>
+    <text x="344" y="226">✦ CHOMP 梯度轨迹优化 (O3/O4)</text>
+    <rect x="590" y="208" width="200" height="26" rx="8" fill="#fff" stroke="#b45309"/>
+    <text x="604" y="226">🧷 约束投影 (轴对齐 ±3°)</text>
+    <rect x="810" y="208" width="230" height="26" rx="8" fill="#fff" stroke="#b45309"/>
+    <text x="824" y="226">🔁 F/T 超限触发重规划</text>
+  </g>
+
+  <!-- L5 控制执行层 -->
+  <rect x="40" y="58" width="1020" height="86" rx="14" fill="url(#ctrl)" stroke="#16a34a" stroke-width="2"/>
+  <text x="60" y="90" font-size="16" font-weight="700" fill="#14532d">L5 · 接触控制执行层 Control &amp; Execution</text>
+  <g font-size="14" fill="#052e16">
+    <rect x="70" y="106" width="260" height="28" rx="8" fill="#fff" stroke="#15803d"/>
+    <text x="84" y="125">🛡 操作空间阻抗控制 Kp=200~800 N/m</text>
+    <rect x="350" y="106" width="260" height="28" rx="8" fill="#fff" stroke="#15803d"/>
+    <text x="364" y="125">⚖ 力位混合：Fz±10N 闭环 · 切向±0.5mm</text>
+    <rect x="630" y="106" width="200" height="28" rx="8" fill="#fff" stroke="#15803d"/>
+    <text x="644" y="125">⚠ 急停回退 F&gt;50N / τ&gt;5N·m</text>
+    <rect x="850" y="106" width="190" height="28" rx="8" fill="#fff" stroke="#15803d"/>
+    <text x="864" y="125">🤖 UR5e / Panda / Elfin5</text>
+  </g>
+
+  <!-- 流程箭头（自下而上：感知→融合→VLA→规划→控制） -->
+  <g stroke="#475569" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+    <path d="M 550 500 L 550 484"/>
+    <path d="M 550 398 L 550 382"/>
+    <path d="M 390 256 L 390 242"/>
+    <path d="M 550 160 L 550 144"/>
+  </g>
+
+  <!-- VLA 决策 → 规划的双箭头（中央靠右） -->
+  <g stroke="#475569" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+    <path d="M 720 256 L 720 240"/>
+  </g>
+
+  <!-- VLA ↔ 世界模型 双向箭头 -->
+  <g stroke="#e11d48" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#arrow)">
+    <path d="M 740 319 L 760 319"/>
+  </g>
+  <text x="692" y="402" font-size="11" fill="#dc2626">VLA Action → 世界模型条件 c</text>
+  <text x="692" y="416" font-size="11" fill="#dc2626">世界模型 state → VLA 附加观测（闭环反馈）</text>
+  <g stroke="#e11d48" stroke-width="1.6" stroke-dasharray="5 4" fill="none" marker-end="url(#arrow)">
+    <path d="M 740 380 L 760 362"/>
+  </g>
+
+  <!-- 右侧 AI 大模型结合标签（评分维度 4 可视化） -->
+  <rect x="870" y="8" width="190" height="38" rx="10" fill="#fee2e2" stroke="#ef4444"/>
+  <text x="958" y="33" text-anchor="middle" font-size="14" font-weight="700" fill="#991b1b">🧠 AI 大模型结合：3 节点 ✓</text>
+
+  <!-- 底部图例：四个操作任务 -->
+  <g transform="translate(40,602)">
+    <text font-size="12" fill="#334155">接触操作任务：</text>
+    <rect x="96" y="-14" width="14" height="14" rx="3" fill="#0ea5e9"/>
+    <text x="118" y="-3" font-size="12" fill="#334155">O1 门锁</text>
+    <rect x="174" y="-14" width="14" height="14" rx="3" fill="#6366f1"/>
+    <text x="196" y="-3" font-size="12" fill="#334155">O2 抽屉</text>
+    <rect x="244" y="-14" width="14" height="14" rx="3" fill="#ef4444"/>
+    <text x="266" y="-3" font-size="12" fill="#334155">O3 旋钮</text>
+    <rect x="314" y="-14" width="14" height="14" rx="3" fill="#f59e0b"/>
+    <text x="336" y="-3" font-size="12" fill="#334155">O4 试管插拔</text>
+  </g>
+</svg>

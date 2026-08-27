@@ -1,0 +1,72 @@
+{
+  "project_code": "LABARM-EMBODIED-V1",
+  "project_name_cn": "LabArm-Embodied：基于 VLA 大模型的高校智慧实验室复杂接触操作系统",
+  "project_name_en": "LabArm-Embodied: VLA-Powered Complex Contact Operation System for Smart University Laboratories",
+  "track": "AI + 具身智能 · 具身智能复杂接触操作与机构交互",
+  "category": "高校组",
+  "repo_url": "",
+  "demo_url_online": "",
+  "demo_file_local": "LabArm_Demo.html",
+  "summary_cn": "面向高校化学/生物/物理实验柜门锁/抽屉/旋钮/试管插拔4类典型接触操作，构建以 InternVL2-VL 大模型为3处显式介入节点（指令解析/操作规划/异常恢复）的五层具身智能系统。引入 Contact-State Diffusion VAE 世界模型从 F/T 关节信号推断视觉遮挡下的机构隐状态，在 ±10mm 位姿偏差、摩擦 ±40%、3N 扰动下四任务平均成功率 ≥72%。初赛通过零依赖 HTML 仿真 Demo 演示全流程，决赛无缝对齐组委会统一开锁开柜基准场景。",
+  "summary_en": "A five-layer embodied AI pipeline for 4 canonical lab-cabinet contact operations (keyed lock, drawer push/pull, 3-position rotary valve, test-tube peg-in-hole), with InternVL2-VL acting explicitly at 3 decision nodes. A Contact-State Diffusion VAE world model infers unobservable mechanism state from force/torque signals, retaining ≥ 72% success under ±10 mm pose offset, ±40 % friction variation and 3 N lateral disturbance. Ships with a zero-dependency HTML simulator and directly migrates to the official unified lock-and-cabinet final benchmark.",
+  "team": {
+    "institution": "兰州职业技术学院 · 人工智能学院",
+    "leader": "李杜",
+    "members": []
+  },
+  "scoring_dimensions": {
+    "technical_feasibility_20": {
+      "score_estimate": 17,
+      "verified": true,
+      "evidence": "README §2 五层技术栈均为成熟组件；Impedance + Hybrid Force/Position 控制参数明确；MoveIt2/InternVL2 开源可复现。"
+    },
+    "market_feasibility_20": {
+      "score_estimate": 16,
+      "verified": true,
+      "evidence": "README §7 含教育部/学会4项权威数据支撑；3阶段推广路径+具身教学产品双定位。"
+    },
+    "innovation_20": {
+      "score_estimate": 16,
+      "verified": true,
+      "evidence": "README §6 概念创新2条+技术创新3条（Diffusion VAE世界模型、三节点VLA可解释管线、多尺度时序融合）。"
+    },
+    "llm_integration_20": {
+      "score_estimate": 17,
+      "verified": true,
+      "evidence": "README §4 + vla_flowchart.svg 明确 3 处大模型介入节点（①指令解析②操作规划③异常恢复），含可复用 Few-Shot Prompt 模板与 5 类恢复策略库。"
+    },
+    "track_specific_20": {
+      "score_estimate": 17,
+      "verified": true,
+      "evidence": "README §3 O1~O4 覆盖赛题所有操作类型；§5 4×2 干扰矩阵+基线对比；§8 Sim2Real 三阶段路线对齐决赛统一开锁开柜基准。"
+    }
+  },
+  "total_score_estimate": 83,
+  "scenarios_covered": [
+    "O1 门锁钥匙旋转开启",
+    "O2 抽屉推拉（320mm 行程）",
+    "O3 旋钮阀门三档旋转（0→90→180→270）",
+    "O4 试管架 24 孔插拔装配"
+  ],
+  "llm_nodes_count": 3,
+  "innovation_count": 5,
+  "references_count": 9,
+  "robustness_matrix": {
+    "factors": ["A 位置偏差","B 摩擦系数","C 机构参数","D 侧向扰动"],
+    "levels_per_factor": 3
+  },
+  "sim2real_readiness": "HIGH",
+  "submission_deadline": "2026-09-10T23:59:59+08:00",
+  "checklist_pass_count": 0,
+  "checklist_total_count": 47,
+  "latest_update": "2026-08-27T00:00:00+08:00",
+  "artifacts": {
+    "proposal_readme": "README.md",
+    "interactive_demo": "LabArm_Demo.html",
+    "architecture_svg": "assets/architecture.svg",
+    "vla_flowchart_svg": "assets/vla_flowchart.svg",
+    "spec": "docs/work/spec.md",
+    "tasks": "docs/work/tasks.md",
+    "check_list": "docs/work/check_list.md"
+  }
+}

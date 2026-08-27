@@ -28,3 +28,28 @@ build/
 # Sensitive
 .env
 .env.local
+
+# Submission zip packages (generated locally, do not commit)
+GOAI_*_参赛作品.zip
+GOAI_CourseClip_参赛作品.zip
+GOAI_LabArm_参赛作品.zip
+
+# Large installers and non-source binaries (> 20MB)
+TRAE_Work-Setup-x64.exe
+TRAE_Work_CN-Setup-x64.exe
+trae-training.zip
+
+# Teaching materials (optional to ignore; keep only AIEDU参赛 source)
+# 如需把培训目录下的教案/PPT也纳入版本管理，请注释或删除下面这些行
+*.pptx
+*.ppt
+*.pdf
+*.docx
+*.doc
+*.avi
+*.mp4
+*.rar
+*.zip
+!docs/**/*.zip
+!assets/**/*.zip
+
